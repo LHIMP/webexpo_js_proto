@@ -1,0 +1,441 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Tests FINAUX pour BW - 202002</title>
+    <meta charset="utf-8" />
+    <script src="js/jquery-3.2.1.js"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            var nav = "Je ne sais pas quel est le navigateur!";
+
+            var j, i = navigator.userAgent.indexOf("Edge");
+            if (i !== -1) {
+                nav = navigator.userAgent.slice(i);
+            }
+            else {
+                i = navigator.vendor.indexOf("Google");
+                if (i !== -1) {
+                    i = navigator.userAgent.indexOf("Chrome");
+                    nav = navigator.userAgent.slice(i, navigator.userAgent.indexOf(" ", i));
+                }
+                else {
+                    i = navigator.userAgent.indexOf("Fire");
+                    if (i !== -1) {
+                        nav = navigator.userAgent.slice(navigator.userAgent.indexOf("Fire"));
+                    }
+                    else {
+                        var isIE = /*@cc_on!@*/false || !!document.documentMode;
+                        if (isIE) {
+                            nav = "IE probablement la version 11!"
+                        }
+                    }
+                }
+            }
+
+            $('#navigateur').text(nav);
+        });
+    </script>
+    <script src="js/jquery-3.2.1.js"></script>
+    <script src="js/jquery-ui.js"></script>
+    <script src="js/A.js"></script>
+    <script src="js/G.js"></script>
+    <script src="js/U.js"></script>
+    <script src="js/M0.js"></script>
+    <script src="js/M0.js"></script>
+    <script src="js/M2modelIntro.js"></script>
+    <script src="js/M2modelPerSe.js"></script>
+    <script src="js/M2modelValidation.js"></script>
+    <script src="js/MT.js"></script>
+    <script src="js/NUM.js"></script>
+    <script src="js/O.js"></script>
+    <script src="js/S.js"></script>
+    <script type="text/javascript">
+
+
+        function searchPRNPosition(prn, seed, maxN) {
+            zygotine.S.prng.init(seed);
+            var z = -1;
+            var count = 0;
+            if (typeof maxN === "undefined") {
+                maxN = Number.POSITIVE_INFINITY;
+            }
+
+            while (true) {
+                z = zygotine.S.uniform.sample(1);
+                if (z === prn) {
+                    break;
+                }
+
+                count++;
+                if (count > maxN) {
+                    break;
+                }
+            }
+
+            return count <= maxN ? { found: true, position: count } : { found: false, position: -1 };
+        }
+
+
+        function DonneeFinale(chaine, no, logN, muExpected, swExpected, sbExpected) {
+            this.chaine = chaine;
+            this.no = no;
+            this.logN = logN;
+            this.attentes = { mu: muExpected, sw: swExpected, sb: sbExpected };
+        }
+
+        DonneeFinale.prototype = {
+            toCSV: function () {
+                var a = [];
+                a.push("mesures\t" + this.chaine);
+                a.push("logN\t" + (this.logN ? "vrai" : "false"));
+                a.push("valeurs attendues\tmu\t" + (this.attentes.mu) + "\tsw\t" + (this.attentes.sw) + "\tsb\t" + (this.attentes.sb));
+                return (a.join('\n'));
+            }
+        }
+
+        dataFinal = arrangerChainesJ();
+
+
+        function unTestFinal_uninformative(info, firstSeed, kindOfModel, rep) {
+            // utilise data2
+            var mlStr;
+            var mcmc = zygotine.M.McmcParameters.getDefaults();
+            mcmc.nBurnin = 5000;
+            mcmc.nIter = 50000;
+            var sbRange, swRange, type;
+            if (kindOfModel === "u1") {
+                if (info.logN) {
+                    sbRange = [0, 2.3];
+                    swRange = [0.01, 2.3];
+                } else {
+                    sbRange = [0, 20];
+                    swRange = [0.1, 20];
+                }
+
+                type = "u1";
+
+            } else { // "u2""
+                if (info.logN) {
+                    sbRange = [0, 100];
+                    swRange = [0, 100];
+                } else {
+                    sbRange = [0, 1000];
+                    swRange = [0, 1000];
+                }
+
+                type = "u2";
+            }
+
+            mcmc.monitorBurnin = true;
+            var measures;
+            var specificParameters;
+            var model;
+            var resultat;
+            var retVal = { mu: [], sb: [], sw: [], prngSeed: [] };
+            retVal.param = specificParameters;
+            retVal.mcmc = mcmc;
+            var logN = info.logN;
+            var prngSeed = firstSeed;
+            if (typeof prngSeed === 'undefined') {
+                prngSeed = 12;
+            }
+
+            //var bigArray3 = new Array(27 + 1 + 3);
+            //for (let iba = 0; iba < (27 + 1); iba++) {
+            //    bigArray3[iba] = new Array(rep);
+            //}
+
+            retVal.params = specificParameters;
+            let oel = logN ? 1 : 90;
+            specificParameters = new zygotine.M.BetweenWorkerModelParameters(logN, true, oel);
+            specificParameters.sigmaWithinRange = swRange.slice();
+            specificParameters.sigmaBetweenRange = sbRange.slice();
+            measures = new zygotine.M.MeasureList(info.chaine);
+
+            for (let iRep = 0; iRep < rep; iRep++) {
+                let oel = logN ? 1 : 90;
+                model = new zygotine.M.BetweenWorkerModel(measures, specificParameters, mcmc);
+                resultat = model.compute(prngSeed);
+                var q = new zygotine.S.Quantile(resultat.quantileProbs);
+
+                retVal.prngSeed[iRep] = resultat.prngSeed;
+                retVal.mu[iRep] = q.compute(resultat.chains.muOverallSample.data);
+                retVal.sw[iRep] = q.compute(resultat.chains.sigmaWithinSample.data);
+                retVal.sb[iRep] = q.compute(resultat.chains.sigmaBetweenSample.data);
+                prngSeed++;
+            }
+
+            retVal.muMean = new Array(9);
+            retVal.swMean = new Array(9);
+            retVal.sbMean = new Array(9);
+            for (let iQ = 0; iQ < 9; iQ++) {
+                let MU = new Array(rep);
+                let SW = new Array(rep);
+                let SB = new Array(rep);
+                for (let iRep = 0; iRep < rep; iRep++) {
+                    MU[iRep] = retVal.mu[iRep][iQ];
+                    SW[iRep] = retVal.sw[iRep][iQ];
+                    SB[iRep] = retVal.sb[iRep][iQ];
+                }
+
+                retVal.muMean[iQ] = zygotine.U.mean(MU);
+                retVal.swMean[iQ] = zygotine.U.mean(SW);
+                retVal.sbMean[iQ] = zygotine.U.mean(SB);
+            }
+
+            var txt = [];
+            txt.push(info.toCSV());
+            txt.push("mcmc\tnBurnin\t" + mcmc.nBurnin + "\tnIter\t" + mcmc.nIter);
+            txt.push("onglet\t" + (info.no) + "-" + kindOfModel);
+            txt.push("ranges\tsw\t" + specificParameters.sigmaWithinRange[0] + "\t" + specificParameters.sigmaWithinRange[1] + "\tsb\t" + specificParameters.sigmaBetweenRange[0] + "\t" + specificParameters.sigmaBetweenRange[1]);
+            txt.push("\n");
+            txt.push("moyennes\tmu\t" + retVal.muMean.join("\t"));
+            txt.push("\tsw\t" + retVal.swMean.join("\t"));
+            txt.push("\tsb\t" + retVal.sbMean.join("\t"));
+
+            for (let iRep = 0; iRep < rep; iRep++) {
+                txt.push(retVal.prngSeed[iRep] + "\tmu\t" + retVal.mu[iRep].join("\t"));
+                txt.push("\tsw\t" + retVal.sw[iRep].join("\t"));
+                txt.push("\tsb\t" + retVal.sb[iRep].join("\t"));
+            }
+
+
+            retVal.txt = txt.join("\n");
+            delete retVal.mu;
+            delete retVal.sw;
+            delete retVal.sb;
+            return retVal;
+        };
+
+        function doNTestsFinaux_uninformative(infoA, firstSeed, kindOfModel, rep) {
+
+            var reponse = [];
+            infoA.forEach(info => reponse.push(unTestFinal_uninformative(info, firstSeed, kindOfModel, rep)));
+            return reponse;
+        }
+
+
+        function unTestFinal_informedVar(info, firstSeed, rep) {
+            // utilise data2
+            var mlStr;
+            var mcmc = zygotine.M.McmcParameters.getDefaults();
+            mcmc.nBurnin = 5000;
+            mcmc.nIter = 50000;
+            mcmc.monitorBurnin = true;
+            var measures;
+            var specificParameters;
+            var model;
+            var resultat;
+            var retVal = { mu: [], sb: [], sw: [], prngSeed: [] };
+            retVal.mcmc = mcmc;
+            var logN = info.logN;
+            var prngSeed = firstSeed;
+            if (typeof prngSeed === 'undefined') {
+                prngSeed = 12;
+            }
+
+            retVal.params = specificParameters;
+            let oel = logN ? 1 : 90;
+            specificParameters = new zygotine.M.BetweenWorkerModelParameters(logN, false, oel);
+            measures = new zygotine.M.MeasureList(info.chaine);
+
+            for (let iRep = 0; iRep < rep; iRep++) {
+                let oel = logN ? 1 : 90;
+                model = new zygotine.M.BetweenWorkerModel(measures, specificParameters, mcmc);
+                resultat = model.compute(prngSeed);
+                retVal.prngSeed[iRep] = resultat.prngSeed;
+                var q = new zygotine.S.Quantile(resultat.quantileProbs);
+                retVal.mu[iRep] = q.compute(resultat.chains.muOverallSample.data);
+                retVal.sw[iRep] = q.compute(resultat.chains.sigmaWithinSample.data);
+                retVal.sb[iRep] = q.compute(resultat.chains.sigmaBetweenSample.data);
+                prngSeed++;
+            }
+
+            retVal.muMean = new Array(9);
+            retVal.swMean = new Array(9);
+            retVal.sbMean = new Array(9);
+            for (let iQ = 0; iQ < 9; iQ++) {
+                let MU = new Array(rep);
+                let SW = new Array(rep);
+                let SB = new Array(rep);
+                for (let iRep = 0; iRep < rep; iRep++) {
+                    MU[iRep] = retVal.mu[iRep][iQ];
+                    SW[iRep] = retVal.sw[iRep][iQ];
+                    SB[iRep] = retVal.sb[iRep][iQ];
+                }
+
+                retVal.muMean[iQ] = zygotine.U.mean(MU);
+                retVal.swMean[iQ] = zygotine.U.mean(SW);
+                retVal.sbMean[iQ] = zygotine.U.mean(SB);
+            }
+
+            var txt = [];
+            txt.push(info.toCSV());
+            txt.push("mcmc\tnBurnin\t" + mcmc.nBurnin + "\tnIter\t" + mcmc.nIter);
+            txt.push("onglet\t" + (info.no) + "-infVar");
+            txt.push("\n");
+            txt.push("moyennes\tmu\t" + retVal.muMean.join("\t"));
+            txt.push("\tsw\t" + retVal.swMean.join("\t"));
+            txt.push("\tsb\t" + retVal.sbMean.join("\t"));
+
+            for (let iRep = 0; iRep < rep; iRep++) {
+                txt.push(retVal.prngSeed[iRep] + "\tmu\t" + retVal.mu[iRep].join("\t"));
+                txt.push("\tsw\t" + retVal.sw[iRep].join("\t"));
+                txt.push("\tsb\t" + retVal.sb[iRep].join("\t"));
+            }
+
+
+            retVal.txt = txt.join("\n");
+            delete retVal.mu;
+            delete retVal.sw;
+            delete retVal.sb;
+            return retVal;
+        };
+
+        function doNTestsFinaux_informedVar(infoA, firstSeed, rep) {
+            var reponse = [];
+            infoA.forEach(info => reponse.push(unTestFinal_informedVar(info, firstSeed, rep)));
+            return reponse;
+        }
+
+
+        function arrangerChainesJ() {
+
+            var chainesJ = `mu	-1.2
+sw	0.87
+sb	0.29
+chaine	0.106;worker-1|0.835;worker-1|0.244;worker-1|0.638;worker-1|0.286;worker-1|3.6;worker-1|0.219;worker-1|0.248;worker-1|0.823;worker-1|0.141;worker-1|0.388;worker-2|0.056;worker-2|0.415;worker-2|0.321;worker-2|0.673;worker-2|0.0318;worker-2|0.461;worker-2|0.621;worker-2|0.867;worker-2|0.241;worker-2|0.387;worker-3|0.209;worker-3|0.195;worker-3|0.105;worker-3|0.0307;worker-3|0.341;worker-3|0.0944;worker-3|0.598;worker-3|0.329;worker-3|0.197;worker-3|0.192;worker-4|0.155;worker-4|0.291;worker-4|0.447;worker-4|0.427;worker-4|1.09;worker-4|0.945;worker-4|0.166;worker-4|0.778;worker-4|0.148;worker-4|0.348;worker-5|0.165;worker-5|0.0128;worker-5|1.41;worker-5|0.0848;worker-5|0.0612;worker-5|0.103;worker-5|0.143;worker-5|1.3;worker-5|0.434;worker-5|0.727;worker-6|0.332;worker-6|0.145;worker-6|0.369;worker-6|1.35;worker-6|0.381;worker-6|0.236;worker-6|0.102;worker-6|1.88;worker-6|0.5;worker-6|1.21;worker-7|0.0809;worker-7|0.633;worker-7|0.134;worker-7|0.16;worker-7|0.694;worker-7|0.268;worker-7|0.132;worker-7|0.251;worker-7|0.81;worker-7|0.403;worker-8|0.159;worker-8|1.12;worker-8|0.725;worker-8|1.3;worker-8|2.17;worker-8|1.33;worker-8|0.241;worker-8|1.16;worker-8|0.355;worker-8|1.8;worker-9|0.171;worker-9|0.0889;worker-9|0.234;worker-9|0.196;worker-9|0.574;worker-9|0.369;worker-9|1.11;worker-9|0.171;worker-9|0.317;worker-9|0.765;worker-10|0.257;worker-10|0.141;worker-10|0.451;worker-10|0.259;worker-10|0.463;worker-10|0.731;worker-10|0.0732;worker-10|0.142;worker-10|0.103;worker-10
+mu	-1.2
+sw	0.65
+sb	0.65
+chaine	0.792;worker-1|1.7;worker-1|0.959;worker-1|0.5;worker-1|0.377;worker-1|0.574;worker-1|0.596;worker-1|3.44;worker-1|0.129;worker-1|0.198;worker-1|2.31;worker-2|0.974;worker-2|1.12;worker-2|3.39;worker-2|1.16;worker-2|5.43;worker-2|0.445;worker-2|4.12;worker-2|3.12;worker-2|1.07;worker-2|0.166;worker-3|0.595;worker-3|0.551;worker-3|2.56;worker-3|1.28;worker-3|0.722;worker-3|0.23;worker-3|0.81;worker-3|0.525;worker-3|0.861;worker-3|0.152;worker-4|0.0943;worker-4|0.165;worker-4|0.132;worker-4|0.366;worker-4|0.105;worker-4|0.612;worker-4|0.175;worker-4|0.168;worker-4|0.196;worker-4|0.394;worker-5|0.0403;worker-5|0.0806;worker-5|0.167;worker-5|0.4;worker-5|0.103;worker-5|0.0978;worker-5|0.0494;worker-5|0.501;worker-5|0.164;worker-5|0.116;worker-6|0.151;worker-6|0.126;worker-6|0.0935;worker-6|0.111;worker-6|0.16;worker-6|0.145;worker-6|0.0807;worker-6|0.0542;worker-6|0.0984;worker-6|0.23;worker-7|0.431;worker-7|0.0539;worker-7|0.491;worker-7|0.37;worker-7|0.414;worker-7|0.306;worker-7|0.136;worker-7|0.243;worker-7|0.219;worker-7|0.221;worker-8|0.254;worker-8|0.548;worker-8|0.179;worker-8|0.0691;worker-8|0.94;worker-8|0.305;worker-8|0.386;worker-8|0.553;worker-8|0.746;worker-8|0.0979;worker-9|0.328;worker-9|0.148;worker-9|0.0843;worker-9|0.474;worker-9|0.272;worker-9|0.13;worker-9|0.0577;worker-9|0.231;worker-9|0.225;worker-9|0.137;worker-10|0.156;worker-10|0.0517;worker-10|0.385;worker-10|0.181;worker-10|0.1;worker-10|0.616;worker-10|0.421;worker-10|0.141;worker-10|0.21;worker-10
+mu	-1.2
+sw	0.29
+sb	0.87
+chaine	0.366;worker-1|0.392;worker-1|0.367;worker-1|0.26;worker-1|0.497;worker-1|0.265;worker-1|0.39;worker-1|0.316;worker-1|0.39;worker-1|0.279;worker-1|1.49;worker-2|1.37;worker-2|0.837;worker-2|1.02;worker-2|1.05;worker-2|1.04;worker-2|1.18;worker-2|1.48;worker-2|1.1;worker-2|1.5;worker-2|0.174;worker-3|0.196;worker-3|0.235;worker-3|0.291;worker-3|0.323;worker-3|0.294;worker-3|0.182;worker-3|0.465;worker-3|0.255;worker-3|0.316;worker-3|0.151;worker-4|0.133;worker-4|0.18;worker-4|0.381;worker-4|0.178;worker-4|0.2;worker-4|0.271;worker-4|0.112;worker-4|0.169;worker-4|0.14;worker-4|0.51;worker-5|0.518;worker-5|0.419;worker-5|0.57;worker-5|0.371;worker-5|0.482;worker-5|0.791;worker-5|0.553;worker-5|0.43;worker-5|0.66;worker-5|0.139;worker-6|0.137;worker-6|0.134;worker-6|0.143;worker-6|0.105;worker-6|0.128;worker-6|0.0925;worker-6|0.0867;worker-6|0.125;worker-6|0.144;worker-6|0.175;worker-7|0.393;worker-7|0.182;worker-7|0.306;worker-7|0.226;worker-7|0.224;worker-7|0.176;worker-7|0.299;worker-7|0.248;worker-7|0.239;worker-7|1.13;worker-8|0.794;worker-8|1.12;worker-8|1.47;worker-8|1.63;worker-8|1.65;worker-8|1.17;worker-8|1.65;worker-8|1.95;worker-8|0.979;worker-8|0.43;worker-9|0.38;worker-9|0.198;worker-9|0.256;worker-9|0.254;worker-9|0.366;worker-9|0.37;worker-9|0.22;worker-9|0.34;worker-9|0.388;worker-9|0.175;worker-10|0.188;worker-10|0.149;worker-10|0.313;worker-10|0.209;worker-10|0.157;worker-10|0.162;worker-10|0.109;worker-10|0.152;worker-10|0.105;worker-10
+mu	-1.2
+sw	0.92
+sb	0
+chaine	0.0747;worker-1|0.17;worker-1|1.73;worker-1|0.601;worker-1|0.695;worker-1|0.967;worker-1|1.64;worker-1|0.0915;worker-1|0.734;worker-1|0.137;worker-1|0.617;worker-2|0.91;worker-2|0.397;worker-2|0.363;worker-2|0.234;worker-2|0.726;worker-2|0.337;worker-2|0.105;worker-2|0.151;worker-2|0.955;worker-2|0.468;worker-3|0.0738;worker-3|0.175;worker-3|0.274;worker-3|0.0439;worker-3|0.0483;worker-3|0.766;worker-3|0.203;worker-3|0.131;worker-3|0.162;worker-3|0.368;worker-4|0.665;worker-4|1.37;worker-4|3.62;worker-4|0.298;worker-4|0.287;worker-4|1.76;worker-4|0.062;worker-4|0.202;worker-4|0.193;worker-4|0.428;worker-5|0.295;worker-5|0.546;worker-5|0.31;worker-5|0.518;worker-5|0.361;worker-5|0.185;worker-5|2.12;worker-5|0.524;worker-5|0.0582;worker-5|2.72;worker-6|0.175;worker-6|1.25;worker-6|0.428;worker-6|0.652;worker-6|0.0315;worker-6|0.187;worker-6|0.284;worker-6|0.33;worker-6|0.767;worker-6|0.174;worker-7|0.0702;worker-7|0.0502;worker-7|1.43;worker-7|0.753;worker-7|0.178;worker-7|0.872;worker-7|0.695;worker-7|0.0854;worker-7|0.144;worker-7|0.141;worker-8|0.163;worker-8|0.253;worker-8|0.589;worker-8|0.111;worker-8|0.0971;worker-8|0.172;worker-8|0.486;worker-8|0.242;worker-8|0.411;worker-8|0.228;worker-9|0.901;worker-9|0.219;worker-9|0.116;worker-9|1.27;worker-9|0.224;worker-9|0.0608;worker-9|0.0627;worker-9|0.368;worker-9|1.58;worker-9|0.0693;worker-10|0.129;worker-10|0.683;worker-10|0.348;worker-10|0.46;worker-10|0.268;worker-10|0.968;worker-10|0.397;worker-10|0.16;worker-10|0.272;worker-10
+mu	-1.2
+sw	0.067
+sb	0.067
+chaine	0.323;worker-1|0.286;worker-1|0.32;worker-1|0.348;worker-1|0.317;worker-1|0.36;worker-1|0.31;worker-1|0.365;worker-1|0.325;worker-1|0.289;worker-1|0.267;worker-2|0.276;worker-2|0.299;worker-2|0.272;worker-2|0.267;worker-2|0.271;worker-2|0.241;worker-2|0.279;worker-2|0.284;worker-2|0.294;worker-2|0.339;worker-3|0.351;worker-3|0.3;worker-3|0.338;worker-3|0.33;worker-3|0.327;worker-3|0.308;worker-3|0.325;worker-3|0.344;worker-3|0.311;worker-3|0.276;worker-4|0.295;worker-4|0.281;worker-4|0.28;worker-4|0.285;worker-4|0.301;worker-4|0.282;worker-4|0.285;worker-4|0.319;worker-4|0.308;worker-4|0.293;worker-5|0.295;worker-5|0.307;worker-5|0.326;worker-5|0.367;worker-5|0.343;worker-5|0.306;worker-5|0.303;worker-5|0.325;worker-5|0.346;worker-5|0.314;worker-6|0.259;worker-6|0.282;worker-6|0.272;worker-6|0.285;worker-6|0.3;worker-6|0.275;worker-6|0.252;worker-6|0.299;worker-6|0.251;worker-6|0.267;worker-7|0.301;worker-7|0.276;worker-7|0.302;worker-7|0.293;worker-7|0.259;worker-7|0.289;worker-7|0.278;worker-7|0.279;worker-7|0.26;worker-7|0.31;worker-8|0.322;worker-8|0.319;worker-8|0.314;worker-8|0.335;worker-8|0.305;worker-8|0.316;worker-8|0.3;worker-8|0.296;worker-8|0.325;worker-8|0.27;worker-9|0.275;worker-9|0.25;worker-9|0.266;worker-9|0.27;worker-9|0.287;worker-9|0.285;worker-9|0.274;worker-9|0.292;worker-9|0.253;worker-9|0.295;worker-10|0.288;worker-10|0.29;worker-10|0.283;worker-10|0.362;worker-10|0.299;worker-10|0.318;worker-10|0.32;worker-10|0.299;worker-10|0.278;worker-10
+mu	-1.2
+sw	0.095
+sb	0
+chaine	0.326;worker-1|0.307;worker-1|0.284;worker-1|0.339;worker-1|0.257;worker-1|0.298;worker-1|0.273;worker-1|0.289;worker-1|0.369;worker-1|0.378;worker-1|0.244;worker-2|0.327;worker-2|0.261;worker-2|0.264;worker-2|0.329;worker-2|0.325;worker-2|0.294;worker-2|0.29;worker-2|0.312;worker-2|0.282;worker-2|0.31;worker-3|0.273;worker-3|0.294;worker-3|0.333;worker-3|0.352;worker-3|0.31;worker-3|0.286;worker-3|0.299;worker-3|0.298;worker-3|0.275;worker-3|0.253;worker-4|0.292;worker-4|0.263;worker-4|0.325;worker-4|0.275;worker-4|0.302;worker-4|0.26;worker-4|0.283;worker-4|0.285;worker-4|0.3;worker-4|0.335;worker-5|0.33;worker-5|0.303;worker-5|0.26;worker-5|0.337;worker-5|0.297;worker-5|0.327;worker-5|0.271;worker-5|0.31;worker-5|0.307;worker-5|0.333;worker-6|0.326;worker-6|0.35;worker-6|0.317;worker-6|0.317;worker-6|0.333;worker-6|0.271;worker-6|0.365;worker-6|0.29;worker-6|0.319;worker-6|0.334;worker-7|0.389;worker-7|0.277;worker-7|0.326;worker-7|0.287;worker-7|0.287;worker-7|0.293;worker-7|0.323;worker-7|0.238;worker-7|0.291;worker-7|0.27;worker-8|0.267;worker-8|0.35;worker-8|0.273;worker-8|0.311;worker-8|0.308;worker-8|0.32;worker-8|0.34;worker-8|0.357;worker-8|0.32;worker-8|0.298;worker-9|0.307;worker-9|0.343;worker-9|0.334;worker-9|0.325;worker-9|0.276;worker-9|0.296;worker-9|0.307;worker-9|0.328;worker-9|0.305;worker-9|0.299;worker-10|0.317;worker-10|0.28;worker-10|0.312;worker-10|0.312;worker-10|0.342;worker-10|0.4;worker-10|0.351;worker-10|0.279;worker-10|0.362;worker-10
+mu	-1.2
+sw	0.87
+sb	0.29
+chaine	<0.304;worker-1|0.804;worker-1|0.34;worker-1|>0.685;worker-1|<0.297;worker-1|<0.112;worker-1|0.619;worker-1|[0.315,0.708];worker-1|0.307;worker-1|>0.72;worker-1|<0.109;worker-10|0.412;worker-10|<0.104;worker-10|0.705;worker-10|<0.263;worker-10|<0.209;worker-10|[0.182,0.41];worker-10|[0.198,0.446];worker-10|<0.08;worker-10|<0.307;worker-10|>0.629;worker-2|<0.136;worker-2|<0.121;worker-2|0.394;worker-2|0.239;worker-2|0.574;worker-2|0.567;worker-2|0.705;worker-10|[0.471,1.06];worker-2|0.244;worker-2|>0.629;worker-2|0.213;worker-3|<0.185;worker-3|<0.199;worker-3|[0.322,0.724];worker-3|<0.295;worker-3|0.216;worker-3|0.214;worker-3|[0.279,0.627];worker-3|<0.223;worker-3|0.538;worker-4|<0.282;worker-4|[0.369,0.83];worker-4|<0.167;worker-4|0.262;worker-4|>0.614;worker-4|<0.254;worker-4|<0.0976;worker-4|>1.89;worker-4|[0.322,0.724];worker-3|<0.111;worker-5|<0.152;worker-5|0.549;worker-5|<0.182;worker-5|<0.148;worker-5|>1.89;worker-4|<0.209;worker-5|<0.198;worker-5|<0.221;worker-5|<0.0162;worker-5|0.221;worker-6|0.549;worker-5|0.608;worker-6|0.286;worker-6|0.244;worker-6|[0.215,0.484];worker-6|>0.601;worker-6|0.295;worker-6|[0.304,0.684];worker-6|<0.284;worker-6|>1.88;worker-7|>0.601;worker-6|<0.249;worker-7|0.371;worker-7|0.355;worker-7|0.3;worker-7|<0.181;worker-7|0.505;worker-7|0.478;worker-7|[0.25,0.562];worker-7|>1.1;worker-8|<0.292;worker-8|<0.137;worker-8|<0.0566;worker-8|<0.274;worker-8|<0.226;worker-8|0.422;worker-8|<0.0702;worker-8|>1.88;worker-7|<0.289;worker-8|0.348;worker-9|0.214;worker-9|>1.1;worker-8|0.38;worker-9|0.549;worker-9|>1.17;worker-9|>0.618;worker-9|0.498;worker-9|<0.292;worker-9|0.375;worker-9
+mu	-1.2
+sw	0.65
+sb	0.65
+chaine	<0.348;worker-1|<0.264;worker-1|[0.173,0.39];worker-1|<0.298;worker-1|0.355;worker-1|<0.213;worker-1|0.306;worker-1|<0.364;worker-1|<0.126;worker-1|<0.194;worker-1|0.892;worker-10|<0.24;worker-10|[0.259,0.584];worker-10|[0.316,0.71];worker-10|0.486;worker-10|0.66;worker-10|[0.165,0.37];worker-10|0.344;worker-10|<0.282;worker-10|0.355;worker-1|<0.316;worker-2|0.455;worker-2|>0.597;worker-2|0.892;worker-10|>0.664;worker-2|>0.814;worker-2|>0.866;worker-2|0.318;worker-2|[0.381,0.858];worker-2|<0.355;worker-2|<0.228;worker-3|0.413;worker-3|<0.234;worker-3|<0.345;worker-3|<0.108;worker-3|<0.232;worker-3|>0.866;worker-2|[0.577,1.3];worker-3|<0.0573;worker-3|0.303;worker-3|[0.577,1.3];worker-3|<0.0889;worker-4|<0.116;worker-4|<0.145;worker-4|0.312;worker-4|<0.231;worker-4|<0.106;worker-4|<0.36;worker-4|0.413;worker-4|<0.12;worker-4|0.502;worker-5|0.413;worker-4|<0.193;worker-5|<0.259;worker-5|0.424;worker-5|<0.332;worker-5|0.422;worker-5|0.289;worker-5|<0.359;worker-5|<0.359;worker-5|0.354;worker-6|<0.274;worker-6|0.502;worker-5|0.37;worker-6|0.288;worker-6|>0.63;worker-6|<0.292;worker-6|<0.139;worker-6|<0.244;worker-6|<0.286;worker-6|[0.199,0.448];worker-7|0.278;worker-7|0.7;worker-7|>0.63;worker-6|[0.291,0.655];worker-7|>0.734;worker-7|>0.775;worker-7|0.456;worker-7|0.325;worker-7|>0.866;worker-7|0.279;worker-8|0.427;worker-8|<0.301;worker-8|<0.158;worker-8|0.267;worker-8|0.271;worker-8|>0.866;worker-7|[0.209,0.469];worker-8|<0.315;worker-8|0.49;worker-8|0.718;worker-9|>0.745;worker-9|[0.48,1.08];worker-9|0.754;worker-9|0.604;worker-9|0.522;worker-9|>0.953;worker-9|0.834;worker-9|0.744;worker-9|0.49;worker-8
+mu	-1.2
+sw	0.29
+sb	0.87
+chaine	<0.206;worker-1|<0.148;worker-1|<0.0672;worker-1|<0.167;worker-1|<0.171;worker-1|<0.125;worker-1|<0.241;worker-1|<0.222;worker-1|<0.18;worker-1|<0.124;worker-1|[0.285,0.642];worker-10|0.406;worker-10|0.322;worker-10|0.291;worker-10|<0.241;worker-1|0.335;worker-10|0.372;worker-10|[0.267,0.6];worker-10|0.575;worker-10|[0.416,0.936];worker-10|0.55;worker-2|0.753;worker-2|[0.33,0.743];worker-2|0.612;worker-2|[0.416,0.936];worker-10|0.773;worker-2|0.832;worker-2|0.723;worker-2|0.52;worker-2|0.411;worker-2|0.181;worker-3|[0.134,0.301];worker-3|<0.236;worker-3|0.262;worker-3|0.316;worker-3|<0.176;worker-3|0.832;worker-2|[0.259,0.582];worker-3|0.371;worker-3|0.212;worker-3|0.193;worker-4|<0.175;worker-4|<0.111;worker-4|<0.131;worker-4|<0.124;worker-4|<0.226;worker-4|<0.165;worker-4|<0.183;worker-4|<0.228;worker-4|<0.22;worker-4|>0.991;worker-5|>1.53;worker-5|>0.87;worker-5|0.193;worker-4|>1.53;worker-5|>1.36;worker-5|>1.01;worker-5|>0.691;worker-5|>0.806;worker-5|>0.841;worker-5|0.213;worker-6|<0.238;worker-6|[0.143,0.322];worker-6|0.204;worker-6|<0.212;worker-6|<0.203;worker-6|>1.53;worker-5|0.181;worker-6|0.255;worker-6|<0.234;worker-6|<0.208;worker-7|<0.174;worker-7|<0.21;worker-7|0.255;worker-6|<0.169;worker-7|0.192;worker-7|<0.222;worker-7|<0.244;worker-7|<0.201;worker-7|<0.199;worker-7|<0.244;worker-8|0.178;worker-8|<0.212;worker-8|0.187;worker-8|[0.124,0.279];worker-8|<0.168;worker-8|<0.157;worker-8|[0.217,0.489];worker-8|0.192;worker-7|[0.134,0.301];worker-8|0.332;worker-9|0.347;worker-9|[0.217,0.489];worker-8|0.647;worker-9|0.513;worker-9|0.392;worker-9|0.674;worker-9|0.332;worker-9|0.349;worker-9|0.585;worker-9
+mu	-1.2
+sw	0.92
+sb	0
+chaine	<0.244;worker-1|0.229;worker-1|<0.0776;worker-1|1.09;worker-1|0.385;worker-1|<0.153;worker-1|<0.273;worker-1|>1.75;worker-1|[0.327,0.735];worker-1|<0.158;worker-1|0.275;worker-10|>0.92;worker-10|<0.219;worker-10|<0.146;worker-10|>0.942;worker-10|>0.842;worker-10|0.283;worker-10|0.934;worker-10|0.25;worker-10|>1.75;worker-1|0.547;worker-2|1.22;worker-2|<0.215;worker-2|>0.942;worker-10|<0.285;worker-2|<0.199;worker-2|[0.296,0.665];worker-2|>0.969;worker-2|0.377;worker-2|<0.167;worker-2|>0.969;worker-2|<0.202;worker-3|0.519;worker-3|0.199;worker-3|<0.125;worker-3|<0.255;worker-3|0.212;worker-3|0.203;worker-3|0.308;worker-3|[0.322,0.725];worker-3|[0.168,0.377];worker-4|0.43;worker-4|0.519;worker-3|0.404;worker-4|>1.36;worker-4|<0.169;worker-4|1.04;worker-4|<0.249;worker-4|<0.099;worker-4|0.29;worker-4|<0.27;worker-5|>1.36;worker-4|0.3;worker-5|0.413;worker-5|0.555;worker-5|0.492;worker-5|[0.142,0.319];worker-5|<0.288;worker-5|<0.253;worker-5|<0.254;worker-5|<0.219;worker-6|>2.39;worker-6|<0.201;worker-6|0.317;worker-6|[0.75,1.69];worker-6|[0.296,0.666];worker-6|<0.0963;worker-6|<0.162;worker-6|>1.09;worker-6|0.555;worker-5|0.441;worker-7|<0.155;worker-7|<0.116;worker-7|[0.52,1.17];worker-7|<0.163;worker-7|[0.181,0.408];worker-7|0.581;worker-7|1.02;worker-7|>0.916;worker-7|>2.39;worker-6|0.302;worker-8|0.727;worker-8|<0.214;worker-8|<0.207;worker-8|0.246;worker-8|>0.916;worker-7|0.323;worker-8|>0.817;worker-8|0.233;worker-8|<0.19;worker-8|<0.113;worker-9|>0.817;worker-8|<0.285;worker-9|0.273;worker-9|<0.184;worker-9|<0.221;worker-9|0.221;worker-9|0.967;worker-9|<0.266;worker-9|<0.186;worker-9
+mu	-1.2
+sw	0.067
+sb	0.067
+chaine	>0.234;worker-1|0.343;worker-1|>0.238;worker-1|[0.199,0.449];worker-1|<0.424;worker-1|0.314;worker-1|0.349;worker-1|0.328;worker-1|<0.413;worker-1|0.313;worker-1|>0.25;worker-10|<0.436;worker-10|0.322;worker-10|0.34;worker-10|>0.241;worker-10|[0.22,0.495];worker-10|[0.224,0.504];worker-10|0.35;worker-10|0.326;worker-10|0.308;worker-10|[0.198,0.445];worker-2|>0.25;worker-10|>0.236;worker-2|>0.241;worker-2|<0.408;worker-2|<0.436;worker-2|>0.243;worker-2|[0.203,0.458];worker-2|<0.432;worker-2|[0.202,0.455];worker-2|0.326;worker-3|>0.243;worker-2|[0.202,0.455];worker-3|0.347;worker-3|<0.435;worker-3|<0.423;worker-3|0.33;worker-3|0.324;worker-3|0.292;worker-3|[0.214,0.482];worker-3|0.324;worker-4|<0.42;worker-4|<0.401;worker-4|<0.434;worker-4|<0.428;worker-4|0.347;worker-3|0.305;worker-4|0.299;worker-4|0.307;worker-4|<0.409;worker-4|0.332;worker-5|<0.438;worker-5|>0.239;worker-5|0.32;worker-5|[0.202,0.456];worker-5|0.324;worker-4|<0.416;worker-5|0.351;worker-5|0.319;worker-5|0.32;worker-5|0.301;worker-6|<0.409;worker-6|<0.393;worker-6|<0.389;worker-6|>0.239;worker-5|0.308;worker-6|<0.433;worker-6|<0.416;worker-6|<0.388;worker-6|<0.421;worker-6|>0.235;worker-7|0.329;worker-7|0.347;worker-7|0.324;worker-7|0.337;worker-7|0.293;worker-7|0.311;worker-7|0.308;worker-6|0.351;worker-7|>0.25;worker-7|<0.357;worker-8|<0.365;worker-8|<0.329;worker-8|<0.354;worker-8|<0.359;worker-8|<0.359;worker-8|<0.382;worker-8|<0.399;worker-8|>0.25;worker-7|<0.368;worker-8|<0.431;worker-9|<0.42;worker-9|<0.437;worker-9|<0.422;worker-9|<0.415;worker-9|<0.425;worker-9|<0.399;worker-8|0.304;worker-9|[0.223,0.502];worker-9|0.35;worker-9
+mu	-1.2
+sw	0.095
+sb	0
+chaine	<0.425;worker-1|0.312;worker-1|<0.438;worker-1|[0.22,0.495];worker-1|0.319;worker-1|0.342;worker-1|0.313;worker-1|0.316;worker-1|<0.416;worker-1|0.311;worker-1|0.297;worker-10|>0.249;worker-10|<0.437;worker-10|<0.417;worker-10|0.296;worker-10|0.301;worker-10|<0.39;worker-10|<0.349;worker-10|[0.213,0.479];worker-10|<0.386;worker-10|<0.402;worker-2|0.301;worker-2|0.334;worker-2|0.323;worker-2|[0.203,0.456];worker-2|<0.42;worker-2|0.293;worker-2|>0.249;worker-10|<0.42;worker-2|0.294;worker-2|0.334;worker-2|[0.225,0.506];worker-3|<0.417;worker-3|<0.396;worker-3|<0.415;worker-3|0.308;worker-3|0.314;worker-3|<0.433;worker-3|>0.238;worker-3|0.296;worker-3|<0.423;worker-4|>0.24;worker-4|[0.197,0.443];worker-4|>0.238;worker-3|0.315;worker-4|<0.389;worker-4|<0.349;worker-4|>0.228;worker-4|<0.412;worker-4|<0.436;worker-4|0.315;worker-5|<0.39;worker-5|<0.437;worker-5|<0.378;worker-5|0.306;worker-5|0.306;worker-5|>0.232;worker-5|0.31;worker-5|>0.24;worker-4|0.305;worker-5|<0.429;worker-6|>0.245;worker-6|[0.213,0.479];worker-6|>0.242;worker-6|<0.374;worker-6|0.306;worker-6|0.301;worker-6|[0.21,0.473];worker-6|<0.434;worker-6|<0.428;worker-6|0.307;worker-7|<0.437;worker-7|0.296;worker-7|[0.205,0.461];worker-7|0.338;worker-7|0.31;worker-7|[0.205,0.461];worker-7|>0.245;worker-6|<0.435;worker-7|<0.385;worker-7|0.316;worker-8|<0.421;worker-8|<0.376;worker-8|<0.426;worker-8|0.295;worker-8|>0.23;worker-8|<0.362;worker-8|<0.428;worker-8|0.338;worker-7|0.312;worker-8|<0.413;worker-9|>0.234;worker-9|0.324;worker-9|0.301;worker-9|[0.225,0.506];worker-9|<0.421;worker-9|0.332;worker-9|0.304;worker-9|<0.437;worker-9|0.317;worker-9
+mu	85
+sw	9.5
+sb	3.2
+chaine	85.5;worker-1|80.2;worker-1|95.1;worker-1|74;worker-1|88.1;worker-1|87.6;worker-1|91.8;worker-1|72.8;worker-1|77.4;worker-1|93.3;worker-1|82.7;worker-2|87.5;worker-2|86.9;worker-2|68.2;worker-2|95.8;worker-2|78;worker-2|81.1;worker-2|62.5;worker-2|71.6;worker-2|75.5;worker-2|88.2;worker-3|96.6;worker-3|85.4;worker-3|90.8;worker-3|90.5;worker-3|74.4;worker-3|84.3;worker-3|97.1;worker-3|80.6;worker-3|78.4;worker-3|83.4;worker-4|84.7;worker-4|90.8;worker-4|81.6;worker-4|79;worker-4|96.9;worker-4|86.7;worker-4|87.5;worker-4|85.2;worker-4|81.5;worker-4|69.4;worker-5|76;worker-5|83.3;worker-5|72.5;worker-5|85.6;worker-5|90;worker-5|100;worker-5|83.8;worker-5|71.7;worker-5|83.7;worker-5|92.5;worker-6|72.2;worker-6|75.3;worker-6|80.3;worker-6|81.4;worker-6|74;worker-6|87.5;worker-6|74.8;worker-6|95.9;worker-6|84.2;worker-6|86.8;worker-7|82.8;worker-7|91.5;worker-7|89.4;worker-7|80.9;worker-7|97.5;worker-7|61.1;worker-7|86.7;worker-7|80.6;worker-7|90.2;worker-7|73.8;worker-8|93.7;worker-8|87.4;worker-8|74.2;worker-8|87.4;worker-8|63.2;worker-8|90.6;worker-8|75.7;worker-8|77;worker-8|68.7;worker-8|88.9;worker-9|75.7;worker-9|81.9;worker-9|86;worker-9|76;worker-9|88.4;worker-9|78.6;worker-9|75.4;worker-9|75.3;worker-9|71.3;worker-9|67.1;worker-10|83.5;worker-10|98;worker-10|75.4;worker-10|76.8;worker-10|91.8;worker-10|97.8;worker-10|83.9;worker-10|79.6;worker-10|89.3;worker-10
+mu	85
+sw	7.1
+sb	7.1
+chaine	96.2;worker-1|84.7;worker-1|89.3;worker-1|87.5;worker-1|81.8;worker-1|89.1;worker-1|75.3;worker-1|85.3;worker-1|88;worker-1|81.4;worker-1|91.7;worker-2|101;worker-2|78.5;worker-2|88.5;worker-2|89.4;worker-2|80.4;worker-2|86.2;worker-2|88;worker-2|90.5;worker-2|81;worker-2|86.5;worker-3|84.8;worker-3|94.2;worker-3|86;worker-3|90.6;worker-3|84.8;worker-3|88.7;worker-3|89.5;worker-3|89.5;worker-3|101;worker-3|75.6;worker-4|88.6;worker-4|94;worker-4|80.4;worker-4|95.9;worker-4|95.8;worker-4|87.2;worker-4|91.6;worker-4|90.5;worker-4|79.1;worker-4|95;worker-5|97.3;worker-5|101;worker-5|85.2;worker-5|89.8;worker-5|97.8;worker-5|92.8;worker-5|99.6;worker-5|87.9;worker-5|101;worker-5|67.5;worker-6|79.5;worker-6|72.4;worker-6|87.6;worker-6|68.9;worker-6|80.5;worker-6|79.8;worker-6|72.7;worker-6|83.7;worker-6|83;worker-6|89.2;worker-7|86.5;worker-7|81.2;worker-7|94.1;worker-7|79.6;worker-7|91.5;worker-7|87.6;worker-7|87;worker-7|89;worker-7|96.8;worker-7|98.4;worker-8|86.6;worker-8|108;worker-8|86.6;worker-8|82.6;worker-8|93.5;worker-8|99.2;worker-8|106;worker-8|96.9;worker-8|99.5;worker-8|72.9;worker-9|77.1;worker-9|80.1;worker-9|77;worker-9|86.7;worker-9|84.9;worker-9|80.8;worker-9|78.4;worker-9|64.9;worker-9|89.2;worker-9|68.2;worker-10|74.3;worker-10|76.4;worker-10|74.1;worker-10|82.4;worker-10|64.6;worker-10|67.7;worker-10|79.7;worker-10|78.8;worker-10|92.7;worker-10
+mu	85
+sw	3.2
+sb	9.5
+chaine	95.1;worker-1|92.3;worker-1|88.7;worker-1|102;worker-1|95;worker-1|89.6;worker-1|93.6;worker-1|92.7;worker-1|94.6;worker-1|94.1;worker-1|71.9;worker-2|73.3;worker-2|78.9;worker-2|78.7;worker-2|77.1;worker-2|78.6;worker-2|71.2;worker-2|75.6;worker-2|72;worker-2|74.8;worker-2|90.7;worker-3|90.5;worker-3|92.9;worker-3|92.5;worker-3|90.2;worker-3|83.8;worker-3|90.2;worker-3|92.8;worker-3|89.2;worker-3|92.3;worker-3|96.4;worker-4|97.4;worker-4|95.6;worker-4|97.6;worker-4|98.6;worker-4|95.2;worker-4|95.4;worker-4|92;worker-4|91.1;worker-4|92.8;worker-4|85.1;worker-5|87.5;worker-5|83.4;worker-5|87.6;worker-5|84.9;worker-5|89.8;worker-5|85.8;worker-5|84.1;worker-5|88;worker-5|89.2;worker-5|74.3;worker-6|77.8;worker-6|74.2;worker-6|68.4;worker-6|74.4;worker-6|73.5;worker-6|80.2;worker-6|81.2;worker-6|75.9;worker-6|74.1;worker-6|90.7;worker-7|84;worker-7|87.8;worker-7|89.5;worker-7|87.1;worker-7|87.5;worker-7|87;worker-7|85.9;worker-7|87.8;worker-7|91.7;worker-7|103;worker-8|99.4;worker-8|103;worker-8|107;worker-8|100;worker-8|98.1;worker-8|105;worker-8|99.8;worker-8|100;worker-8|95.5;worker-8|93.7;worker-9|95.3;worker-9|91.9;worker-9|91.1;worker-9|93.5;worker-9|88.2;worker-9|94.3;worker-9|90.4;worker-9|92.1;worker-9|91.6;worker-9|77.1;worker-10|80.2;worker-10|79.1;worker-10|81.5;worker-10|80.1;worker-10|81.5;worker-10|80.3;worker-10|78.9;worker-10|85.8;worker-10|81.4;worker-10
+mu	85
+sw	5
+sb	0
+chaine	93.8;worker-1|82.7;worker-1|89.4;worker-1|88.7;worker-1|87.8;worker-1|85.3;worker-1|81.7;worker-1|85.9;worker-1|85.2;worker-1|88.2;worker-1|81.8;worker-2|86.2;worker-2|80.6;worker-2|87.3;worker-2|87.8;worker-2|91.8;worker-2|75.9;worker-2|79.4;worker-2|87.9;worker-2|93.4;worker-2|85.3;worker-3|80.3;worker-3|86.6;worker-3|82.6;worker-3|86.7;worker-3|87;worker-3|84.4;worker-3|84;worker-3|73.4;worker-3|84.1;worker-3|81.3;worker-4|86.4;worker-4|90.9;worker-4|75.5;worker-4|84.9;worker-4|87.6;worker-4|94.6;worker-4|79.9;worker-4|83.6;worker-4|78.8;worker-4|82.5;worker-5|82.1;worker-5|85.6;worker-5|78;worker-5|80.2;worker-5|86.1;worker-5|82.3;worker-5|78.3;worker-5|82;worker-5|94;worker-5|79.9;worker-6|77.8;worker-6|77.6;worker-6|86.4;worker-6|93.1;worker-6|81.4;worker-6|93.9;worker-6|78.2;worker-6|80.6;worker-6|74.9;worker-6|79.1;worker-7|83.3;worker-7|81.7;worker-7|86.3;worker-7|86.5;worker-7|95.1;worker-7|81.9;worker-7|87.2;worker-7|84.8;worker-7|92.5;worker-7|91;worker-8|86.1;worker-8|78.2;worker-8|87.5;worker-8|76.7;worker-8|82.8;worker-8|87.3;worker-8|76.2;worker-8|86.4;worker-8|96.7;worker-8|84.4;worker-9|85.5;worker-9|82.5;worker-9|82.9;worker-9|91.6;worker-9|85.7;worker-9|80.5;worker-9|82.2;worker-9|91.9;worker-9|87.5;worker-9|83.1;worker-10|85.6;worker-10|87.6;worker-10|87.8;worker-10|87.2;worker-10|82.8;worker-10|85;worker-10|81.9;worker-10|87.8;worker-10|80.8;worker-10
+mu	85
+sw	11
+sb	11
+chaine	90.4;worker-1|92.9;worker-1|82.5;worker-1|106;worker-1|114;worker-1|84;worker-1|95.5;worker-1|91.7;worker-1|100;worker-1|86.7;worker-1|94;worker-2|110;worker-2|103;worker-2|117;worker-2|92.5;worker-2|91.4;worker-2|85.1;worker-2|103;worker-2|91.8;worker-2|115;worker-2|104;worker-3|101;worker-3|80.4;worker-3|97.3;worker-3|109;worker-3|112;worker-3|99.4;worker-3|102;worker-3|88.3;worker-3|93.8;worker-3|91.4;worker-4|81.3;worker-4|79.9;worker-4|85.4;worker-4|94.9;worker-4|103;worker-4|82.6;worker-4|76.8;worker-4|84.6;worker-4|91;worker-4|89.9;worker-5|105;worker-5|107;worker-5|105;worker-5|100;worker-5|91.8;worker-5|90.1;worker-5|88.4;worker-5|97;worker-5|108;worker-5|67.9;worker-6|74.4;worker-6|73.3;worker-6|72.3;worker-6|68.2;worker-6|68.5;worker-6|64.9;worker-6|60.4;worker-6|69.6;worker-6|89.2;worker-6|86.9;worker-7|92.6;worker-7|96.7;worker-7|69.1;worker-7|84.7;worker-7|81.1;worker-7|89.5;worker-7|80.4;worker-7|48.3;worker-7|95.7;worker-7|61.6;worker-8|70.7;worker-8|82.9;worker-8|77.8;worker-8|74;worker-8|61;worker-8|96;worker-8|70.5;worker-8|52.5;worker-8|69.3;worker-8|47.8;worker-9|67;worker-9|64.7;worker-9|59.9;worker-9|63.5;worker-9|61.2;worker-9|51;worker-9|67;worker-9|90.5;worker-9|51.6;worker-9|92.1;worker-10|107;worker-10|102;worker-10|94;worker-10|113;worker-10|117;worker-10|91.9;worker-10|98.5;worker-10|94.2;worker-10|118;worker-10
+mu	85
+sw	0.071
+sb	0.071
+chaine	84.9;worker-1|84.9;worker-1|84.9;worker-1|84.8;worker-1|84.9;worker-1|84.8;worker-1|84.9;worker-1|84.8;worker-1|84.8;worker-1|84.8;worker-1|84.9;worker-2|85;worker-2|85;worker-2|85.1;worker-2|85;worker-2|85;worker-2|85;worker-2|84.9;worker-2|85;worker-2|85;worker-2|85;worker-3|85;worker-3|85;worker-3|84.8;worker-3|85;worker-3|85;worker-3|85;worker-3|84.9;worker-3|85;worker-3|84.9;worker-3|85;worker-4|85;worker-4|85;worker-4|85.1;worker-4|85.1;worker-4|85.1;worker-4|85.1;worker-4|84.9;worker-4|84.8;worker-4|85;worker-4|84.9;worker-5|84.7;worker-5|84.9;worker-5|84.9;worker-5|85.1;worker-5|85;worker-5|84.9;worker-5|84.9;worker-5|85;worker-5|84.8;worker-5|85;worker-6|85.1;worker-6|85;worker-6|85;worker-6|85;worker-6|85;worker-6|85;worker-6|85;worker-6|85.1;worker-6|85;worker-6|85;worker-7|85.1;worker-7|85.1;worker-7|85;worker-7|85;worker-7|85.1;worker-7|85;worker-7|85.1;worker-7|85.1;worker-7|85;worker-7|85.1;worker-8|85.2;worker-8|85.1;worker-8|85.1;worker-8|85.1;worker-8|85.2;worker-8|85.1;worker-8|85.1;worker-8|85.1;worker-8|85.1;worker-8|85;worker-9|85;worker-9|85;worker-9|84.9;worker-9|85;worker-9|84.9;worker-9|85;worker-9|84.9;worker-9|84.9;worker-9|85;worker-9|85.1;worker-10|85.1;worker-10|85.1;worker-10|85;worker-10|85;worker-10|85;worker-10|85.1;worker-10|85.2;worker-10|85.1;worker-10|85.1;worker-10
+mu	85
+sw	9.5
+sb	3.2
+chaine	88.2;worker-1|90.3;worker-1|[74.8,94.8];worker-1|86.2;worker-1|89.4;worker-1|<83.7;worker-1|<92.8;worker-1|86.5;worker-1|91.8;worker-1|[74.6,94.6];worker-1|<92.5;worker-10|<92.3;worker-10|<74.8;worker-10|<93.8;worker-10|91;worker-10|<83;worker-10|<78.4;worker-10|86.2;worker-10|88.5;worker-10|<85.4;worker-10|90.5;worker-2|84.5;worker-2|>86.2;worker-2|94.6;worker-2|>84.7;worker-2|84.5;worker-2|85.8;worker-2|94;worker-2|91;worker-10|86.2;worker-2|<90;worker-3|<92.7;worker-3|87.3;worker-3|<91.9;worker-3|>86.2;worker-2|<84.5;worker-3|>93.4;worker-3|84.2;worker-3|<87.5;worker-3|87.3;worker-3|84.4;worker-4|>85.2;worker-4|<93.4;worker-4|85.6;worker-4|91.2;worker-4|88;worker-4|[82.5,103];worker-4|>93.4;worker-3|<92.4;worker-4|<93.1;worker-4|[78.6,98.6];worker-5|87.2;worker-5|<87.4;worker-5|>85.1;worker-5|89.6;worker-5|>85.2;worker-4|<93.1;worker-5|85.3;worker-5|<84.8;worker-5|<88.7;worker-5|<87.1;worker-6|88.8;worker-6|<93.8;worker-6|<73.6;worker-6|>94.7;worker-6|<93.8;worker-6|<84.5;worker-6|[79.1,99.1];worker-6|92.7;worker-6|<81.7;worker-6|87.1;worker-7|>87.8;worker-7|<94;worker-7|>91.6;worker-7|86.8;worker-7|<89.9;worker-7|>94.7;worker-6|87.7;worker-7|89.1;worker-7|84.8;worker-7|<92.2;worker-8|<77.6;worker-8|[75.3,95.3];worker-8|<78.7;worker-8|<71.9;worker-8|91.7;worker-8|[83.8,104];worker-8|90.1;worker-8|>91.6;worker-7|90.7;worker-8|>89.1;worker-9|<93.7;worker-9|<84.6;worker-9|86.6;worker-9|[79,99];worker-9|88.8;worker-9|[75,95];worker-9|<92;worker-9|>97.1;worker-8|90.7;worker-9
+mu	85
+sw	7.1
+sb	7.1
+chaine	<84.4;worker-1|90.3;worker-1|<84.8;worker-1|82.6;worker-1|87.1;worker-1|<81.6;worker-1|<79.8;worker-1|<84.2;worker-1|<84.8;worker-1|<89.4;worker-1|85.2;worker-10|[76.8,96.8];worker-10|90.3;worker-1|90.3;worker-10|88.6;worker-10|<86.2;worker-10|<83.8;worker-10|81.9;worker-10|[81.8,102];worker-10|[73.8,93.8];worker-10|<72.4;worker-2|<74.8;worker-2|<80.6;worker-2|<83.4;worker-2|<81.9;worker-2|<78.3;worker-2|83.9;worker-2|[81.8,102];worker-10|<78.6;worker-2|<83.5;worker-2|83.9;worker-2|<73.2;worker-3|<69.6;worker-3|<64.3;worker-3|<66.3;worker-3|<70.6;worker-3|<82.5;worker-3|<69.8;worker-3|<71.1;worker-3|<73.5;worker-3|90.7;worker-4|>88.5;worker-4|90.4;worker-4|<88;worker-4|[70.5,90.5];worker-4|85.9;worker-4|<83.9;worker-4|<79.3;worker-4|<75.9;worker-4|<81.6;worker-4|91.4;worker-5|86.6;worker-5|[81.8,102];worker-5|92.6;worker-5|91.3;worker-5|>88.5;worker-4|>84.5;worker-5|>90.5;worker-5|84.4;worker-5|87;worker-5|93.7;worker-6|93.3;worker-6|85.9;worker-6|<89.3;worker-6|85.6;worker-6|87.3;worker-6|[77.2,97.2];worker-6|>90.5;worker-5|85.7;worker-6|<90.2;worker-6|92.2;worker-7|>92.5;worker-7|>84.9;worker-7|90.3;worker-7|>95.9;worker-7|>85;worker-7|89.2;worker-7|89.1;worker-7|93.9;worker-7|93.4;worker-7|85.1;worker-8|>95.9;worker-7|87;worker-8|>92.4;worker-8|91.1;worker-8|92.7;worker-8|>91.6;worker-8|88.3;worker-8|>89.4;worker-8|88.2;worker-8|[70.3,90.3];worker-9|<78.8;worker-9|<82.1;worker-9|<90.1;worker-9|<81.9;worker-9|85.5;worker-9|>92.4;worker-8|[77.7,97.7];worker-9|91.4;worker-9|[73.1,93.1];worker-9
+mu	85
+sw	3.2
+sb	9.5
+chaine	89.8;worker-1|89.8;worker-1|87.8;worker-1|86.9;worker-1|91.9;worker-1|89.8;worker-1|89.8;worker-1|90.2;worker-1|[80.6,101];worker-1|92.9;worker-1|<81.8;worker-10|<87.3;worker-10|<82.9;worker-10|<85.8;worker-10|<85.7;worker-10|<87.3;worker-10|<86.1;worker-10|<86.8;worker-10|<83;worker-10|92.9;worker-1|<92.3;worker-2|<90.3;worker-2|88.9;worker-2|83.5;worker-2|82.6;worker-2|<88.3;worker-10|87.7;worker-2|[76.6,96.6];worker-2|88.9;worker-2|87;worker-2|84.5;worker-3|<84.8;worker-3|<89.1;worker-3|90.5;worker-2|<84.2;worker-3|<88.4;worker-3|<87.7;worker-3|83.8;worker-3|<89;worker-3|<85.3;worker-3|<80.7;worker-4|<81.9;worker-4|<81.6;worker-4|<86.1;worker-4|<87.8;worker-4|<83.8;worker-4|<83.2;worker-4|<86;worker-4|<81.8;worker-4|<81.6;worker-4|>94.3;worker-5|<87.8;worker-4|>96.4;worker-5|>99.4;worker-5|>96.2;worker-5|>91.8;worker-5|>96.7;worker-5|>98;worker-5|>91.5;worker-5|>91.9;worker-5|[85,105];worker-6|[78.8,98.8];worker-6|93.8;worker-6|90.9;worker-6|90.5;worker-6|>99.4;worker-5|89.8;worker-6|[79.7,99.7];worker-6|90.2;worker-6|[79.6,99.6];worker-6|91.7;worker-7|85.1;worker-7|[85,105];worker-6|83.9;worker-7|91.9;worker-7|91.2;worker-7|85.9;worker-7|<91.4;worker-7|84.8;worker-7|86.2;worker-7|[83.3,103];worker-8|89.5;worker-8|91.9;worker-7|85.4;worker-8|89.1;worker-8|85.3;worker-8|[82.1,102];worker-8|[74.6,94.6];worker-8|88.5;worker-8|83.7;worker-8|<84.1;worker-9|<84.7;worker-9|<88;worker-9|<92.3;worker-9|<86.3;worker-9|<85.1;worker-9|<91.4;worker-9|86;worker-9|<90.9;worker-9|[83.3,103];worker-8
+mu	85
+sw	5
+sb	0
+chaine	>81.2;worker-1|[74.7,94.7];worker-1|<92.9;worker-1|83.6;worker-1|<93.1;worker-1|<90.3;worker-1|83.6;worker-1|<90;worker-1|87.3;worker-1|[80.3,100];worker-1|<90.5;worker-10|<93.2;worker-10|86.4;worker-10|>81.8;worker-10|86.8;worker-10|87.1;worker-10|[77.2,97.2];worker-10|<91;worker-10|>81.2;worker-1|86.6;worker-10|90.4;worker-2|<86.9;worker-2|89.2;worker-2|>81.8;worker-10|<90.5;worker-2|88.4;worker-2|<90.1;worker-2|90.6;worker-2|<93.3;worker-2|83.6;worker-2|[76.5,96.5];worker-3|<92.9;worker-3|83.6;worker-3|<92.9;worker-3|86.7;worker-3|87.5;worker-3|88.8;worker-3|[74.6,94.6];worker-3|<87.6;worker-3|90.6;worker-2|<87.4;worker-4|<86.6;worker-4|[77.4,97.4];worker-4|88.8;worker-3|<92.1;worker-4|88.8;worker-4|<89.6;worker-4|[79.9,99.9];worker-4|89.3;worker-4|84.3;worker-4|<93.5;worker-5|<91.2;worker-5|>81.1;worker-5|<92.9;worker-5|>83.1;worker-4|88.4;worker-5|86.7;worker-5|<88.1;worker-5|<86.8;worker-5|<90.2;worker-5|<92.6;worker-6|<93;worker-6|87.9;worker-6|88.3;worker-6|>81.1;worker-5|>82.7;worker-6|<84.9;worker-6|<92.6;worker-6|<91.6;worker-6|>88.1;worker-6|>84.1;worker-7|83.5;worker-7|85.5;worker-7|83.6;worker-7|<86;worker-7|87.7;worker-7|>88.1;worker-6|<92.2;worker-7|84.1;worker-7|>86.8;worker-7|[74.5,94.5];worker-8|>86.8;worker-7|>81.1;worker-8|89;worker-8|84.1;worker-8|[74.6,94.6];worker-8|84.5;worker-8|<93.3;worker-8|[78.3,98.3];worker-8|85;worker-8|<91.5;worker-9|>81.1;worker-8|<85.8;worker-9|85.8;worker-9|85.1;worker-9|<92.2;worker-9|<87.9;worker-9|>83;worker-9|87.5;worker-9|<88.3;worker-9
+mu	85
+sw	11
+sb	11
+chaine	<75.6;worker-1|<80.6;worker-1|91.5;worker-1|91.3;worker-1|<79;worker-1|80.9;worker-1|<83.6;worker-1|<73.1;worker-1|<77.8;worker-1|83.8;worker-1|<71.8;worker-10|85.3;worker-10|<82.7;worker-10|<78.5;worker-10|<75.1;worker-10|84.5;worker-10|91.5;worker-1|83.5;worker-10|<67.1;worker-10|<77.5;worker-10|[71.4,91.4];worker-2|<81.8;worker-2|[77.1,97.1];worker-2|85.8;worker-2|>83.6;worker-2|<82.8;worker-2|83.9;worker-2|85.3;worker-10|89.7;worker-2|[76.9,96.9];worker-2|86.1;worker-3|<83.3;worker-3|<66;worker-3|83.2;worker-3|<65.1;worker-3|77.7;worker-3|[65,85];worker-3|<66.6;worker-3|<62.6;worker-3|<70.8;worker-3|80.5;worker-4|<68.8;worker-4|[64.4,84.4];worker-4|<73.4;worker-4|<63.6;worker-4|<65.5;worker-4|<71.8;worker-4|86.1;worker-3|74.2;worker-4|87;worker-4|75.1;worker-5|87;worker-4|78;worker-5|91.6;worker-5|>83.6;worker-5|77.5;worker-5|>82.3;worker-5|<78.1;worker-5|90;worker-5|<77.5;worker-5|90.4;worker-6|89.8;worker-6|84.7;worker-6|80.3;worker-6|<82.3;worker-6|83.7;worker-6|<77.4;worker-6|<83.1;worker-6|<80;worker-6|>83.6;worker-5|78.4;worker-7|>92.3;worker-7|[79.1,99.1];worker-7|>83.3;worker-7|91.2;worker-7|>85.5;worker-7|>93.5;worker-7|79.1;worker-7|82.2;worker-7|88.5;worker-7|[69.1,89.1];worker-8|>91.1;worker-8|82.7;worker-8|81.9;worker-8|>93.5;worker-7|89.4;worker-8|[66.3,86.3];worker-8|>85.5;worker-8|>102;worker-8|[79.3,99.3];worker-8|78.9;worker-9|<82.1;worker-9|<78.6;worker-9|76;worker-9|[76.7,96.7];worker-9|>102;worker-8|<76.1;worker-9|77.5;worker-9|<79;worker-9|<74.6;worker-9
+mu	85
+sw	0.071
+sb	0.071
+chaine	<95;worker-1|<95;worker-1|85;worker-1|<94.9;worker-1|<94.9;worker-1|85.1;worker-1|85;worker-1|<94.9;worker-1|85;worker-1|85.1;worker-1|[75,95];worker-10|85.1;worker-10|85.1;worker-10|[75,95];worker-10|<95;worker-10|85.1;worker-1|85;worker-10|85;worker-10|85.1;worker-10|85;worker-10|85;worker-2|<95;worker-2|<94.9;worker-2|85;worker-2|85.1;worker-10|85;worker-2|<95;worker-2|[75,95];worker-2|<94.8;worker-2|85;worker-2|[75.1,95.1];worker-3|85.1;worker-3|85;worker-2|85.1;worker-3|[75.1,95.1];worker-3|85;worker-3|85.1;worker-3|>75.2;worker-3|>75.2;worker-3|85;worker-3|<94.9;worker-4|85.1;worker-4|<94.9;worker-4|>75.2;worker-3|<94.8;worker-4|<94.9;worker-4|<94.9;worker-4|<94.8;worker-4|<94.9;worker-4|85;worker-4|<95;worker-5|85;worker-5|<94.9;worker-5|85.1;worker-5|<95;worker-5|<94.9;worker-5|<94.9;worker-5|[75,95];worker-5|85.1;worker-5|85.1;worker-4|85.1;worker-6|85.1;worker-6|85;worker-6|[75.1,95.1];worker-6|85.1;worker-5|>75.2;worker-6|>75.2;worker-6|>75.2;worker-6|85.1;worker-6|[75.1,95.1];worker-6|>75.2;worker-6|85;worker-7|<94.8;worker-7|[75,95];worker-7|<94.9;worker-7|<94.9;worker-7|<94.9;worker-7|<94.9;worker-7|[75,95];worker-7|<94.8;worker-7|85;worker-8|>75.1;worker-8|>75.3;worker-8|85.1;worker-8|>75.2;worker-8|[75,95];worker-7|85;worker-8|85.1;worker-8|85.1;worker-8|85.1;worker-8|<94.9;worker-9|<94.9;worker-9|<94.9;worker-9|<94.9;worker-9|<94.9;worker-9|85;worker-9|<94.9;worker-9|85;worker-9|>75.3;worker-8|<94.9;worker-9`;
+            var A = new Array();
+            var chaine = "", mu = 0, sw = 0, sb = 0;
+            A = chainesJ.split("\n");
+            console.log(A.length);
+            var no = 0, i = 0;
+            var data = [];
+            while (i < A.length) {
+                mu = parseFloat(A[i].split("\t")[1]);
+                sw = parseFloat(A[i + 1].split("\t")[1]);
+                sb = parseFloat(A[i + 2].split("\t")[1]);
+                chaine = A[i + 3].split("\t")[1];
+                no = no + 1;
+                data.push(new DonneeFinale(chaine, no, no < 13, mu, sw, sb));
+                i += 4;
+            }
+
+            return data;
+        }
+    </script>
+</head>
+<body>
+    <div id="navigateur" style="width:20em; text-align:center; font-size:120%; color:darkred;"></div>
+    <div>
+        <pre>
+            C:\Users
+                \zygot
+                \Documents
+                \_aBKP
+                \_jerome
+                \webExpo2015
+                \vs2-2018JS-6 -202002bug...
+                \pourCorrectionsFevrier2020
+                \corrections202002
+                \outil7
+                \BW_testsFinaux.html
+
+        </pre>
+    </div>
+</body>
+</html>
