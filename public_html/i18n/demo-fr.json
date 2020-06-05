@@ -85,5 +85,9 @@
   "plus-gr": "plus grand que",
   "res-trav": "Résultats pour chacun des travailleurs",
   "le-trav": "Le travailleur",
-  "": ""
+  "": "",
+  "Iteration": "Itération",
+  "traceplot-title": "Graphique en tracé de courbe du paramètre MCMC",
+  "telechargez3": "Télécharger le graphique en tracé de courbe du paramètre MCMC (μ)",
+  "telechargez4": "Télécharger le graphique en tracé de courbe du paramètre MCMC (σ)"
 }

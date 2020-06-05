@@ -34,7 +34,9 @@ zygotine.SEG.ready = function () {
 
         var
             dnldSampleChains = document.getElementById("dnldSampleChainBtn"),
-            dnldBurninChains = document.getElementById("dnldBurninChainBtn");
+            dnldBurninChains = document.getElementById("dnldBurninChainBtn"),
+            dnldMuTraceplot = document.getElementById("dnldMuTraceplotBtn"),
+            dnldSigmaTraceplot = document.getElementById("dnldSigmaTraceplotBtn")
 
 
         dnldSampleChains.addEventListener('click', function () {
@@ -65,6 +67,9 @@ zygotine.SEG.ready = function () {
                 document.body.removeChild(link);
             });
         }, false);
+        
+        dnldMuTraceplot.addEventListener('click', function() { downloadTraceplot({name: 'mu', symbol: 'μ'}) }, false)
+        dnldSigmaTraceplot.addEventListener('click', function() { downloadTraceplot({name: 'sd', symbol: 'σ'}) }, false)
     })();
     //$('#select_Chains').change(function () { zygotine.SEG.showChain($('#select_Chains').val()); });
 };

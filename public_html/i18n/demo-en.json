@@ -89,5 +89,8 @@
   "res-trav": "Individual worker results",
   "intervalle": "interval",
   "le-trav": "Worker",
-  "": ""
+  "": "",
+  "traceplot-title": "Traceplot of MCMC parameter",
+  "telechargez3": "Download the traceplot of the MCMC param μ",
+  "telechargez4": "Download the traceplot of the MCMC param σ"
 }

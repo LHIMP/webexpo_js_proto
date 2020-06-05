@@ -1,4 +1,4 @@
-﻿/// <reference path="A.js" />
+/// <reference path="A.js" />
 /// <reference path="M0.js" />
 /// <reference path="M.js" />
 /// <reference path="U.js" />
@@ -401,4 +401,73 @@ function translatePage()
       $(this).replaceWith("<span class='lang selected'>" + $(this).text() + "</span>");
     }
   });
+}
+
+function downloadTraceplot(mcmcParam) {
+  let burninChain = zygotine.SEG.lastModel.result.chains[`${mcmcParam.name}Burnin`].data
+  let mainChain = zygotine.SEG.lastModel.result.chains[`${mcmcParam.name}Sample`].data
+  if ( mainChain.length > 0 ) {
+    let plotElem = document.createElement('div')
+    let data = [
+      {
+        x: [...Array(burninChain.length).keys()].map(x => x+1),
+        y: burninChain,
+        line: {
+          color: 'red'
+        },
+        name: 'Burnin'
+      },
+      {
+        x: [...Array(mainChain.length).keys()].map(x => burninChain.length+x+1),
+        y: mainChain,
+        line: {
+          color: "#1f77b4"
+        },
+        name: $.i18n('Posterior sample')
+      }
+    ]
+    
+    var layout = {
+      title: {
+        text: `${$.i18n('traceplot-title')} <i>${mcmcParam.symbol}</i>`,
+        font: {
+          family: 'Arial Black', 
+          color: 'black',
+          size: 16
+        },
+        x: 0.5,
+        xanchor: 'center',
+        y: 0.98,
+        yanchor: 'top'
+      },
+      xaxis: {
+        title: $.i18n('Iteration'),
+        range: [0, burninChain.length + mainChain.length + 500]
+      },
+      yaxis: {
+        title: 'μ'
+      },
+      margin: {
+        t: 0
+      }
+    }
+    
+    Plotly.newPlot(
+      plotElem,
+      data,
+      layout
+    ).then(function(gd) {
+      let now = new Date()
+      let dateTimeFormat = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }) 
+      let [{ value: month },,{ value: day },,{ value: year },,{ value: hour },,{ value: minute },,{ value: sec },,] = dateTimeFormat .formatToParts(now) 
+      let plotFilename = `traceplot_mcmc_${year}${month}${day}_${hour}${minute}${sec}`
+      Plotly.downloadImage(gd, {
+        format: 'png',
+        height: 600,
+        width: 1000,
+        filename: plotFilename
+      })
+      /* gd.remove() */
+    })
+  }
 }
