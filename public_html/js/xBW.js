@@ -41,7 +41,10 @@ zygotine.BW.ready = function () {
 
         var
             dnldSampleChains = document.getElementById("dnldSampleChainBtn"),
-            dnldBurninChains = document.getElementById("dnldBurninChainBtn");
+            dnldBurninChains = document.getElementById("dnldBurninChainBtn"),
+            dnldMuOverallTraceplot = document.getElementById("dnldMuOverallTraceplotBtn"),
+            dnldSigmaBetweenTraceplot = document.getElementById("dnldSigmaBetweenTraceplotBtn"),
+            dnldSigmaWithinTraceplot = document.getElementById("dnldSigmaWithinTraceplotBtn")
 
         dnldSampleChains.addEventListener('click', function () {
             var link = document.createElement('a');
@@ -71,6 +74,10 @@ zygotine.BW.ready = function () {
                 document.body.removeChild(link);
             });
         }, false);
+        
+        dnldMuOverallTraceplot.addEventListener('click', function() { downloadTraceplot({name: 'muOverall', symbol: 'μ<sub>y</sub>'}) }, false)
+        dnldSigmaBetweenTraceplot.addEventListener('click', function() { downloadTraceplot({name: 'sigmaBetween', symbol: 'σ<sub>b</sub>'}) }, false)
+        dnldSigmaWithinTraceplot.addEventListener('click', function() { downloadTraceplot({name: 'sigmaWithin', symbol: 'σ<sub>w</sub>'}) }, false)
     })();
 };
 

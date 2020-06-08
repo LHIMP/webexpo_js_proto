@@ -404,8 +404,9 @@ function translatePage()
 }
 
 function downloadTraceplot(mcmcParam) {
-  let burninChain = zygotine.SEG.lastModel.result.chains[`${mcmcParam.name}Burnin`].data
-  let mainChain = zygotine.SEG.lastModel.result.chains[`${mcmcParam.name}Sample`].data
+  let modelType = typeof(zygotine.SEG) !== "undefined" ? "SEG" : "BW"
+  let burninChain = zygotine[modelType].lastModel.result.chains[`${mcmcParam.name}Burnin`].data
+  let mainChain = zygotine[modelType].lastModel.result.chains[`${mcmcParam.name}Sample`].data
   if ( mainChain.length > 0 ) {
     let plotElem = document.createElement('div')
     let data = [
