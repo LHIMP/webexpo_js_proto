@@ -88,6 +88,7 @@
   "": "",
   "Iteration": "Itération",
   "traceplot-title": "Graphique en tracé de courbe du paramètre MCMC",
+  "traceplot-filename": "graphique_trace_courbe_param_mcmc",
   "telechargez3": "Télécharger le graphique en tracé de courbe du paramètre MCMC (μ)",
   "telechargez4": "Télécharger le graphique en tracé de courbe du paramètre MCMC (σ)",
   "telechargez5": "Télécharger le graphique en tracé de courbe du paramètre MCMC (μ<sub>y</sub>)",

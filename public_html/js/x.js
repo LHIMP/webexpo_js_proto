@@ -390,7 +390,7 @@ function translatePage()
 {
   var i18n = $.i18n({locale: $.i18n.locale});
   $('body').attr('data-lang', $.i18n.locale);
-  $.i18n().load( 'i18n/demo-' + i18n.locale + '.json', i18n.locale ).done(function(x) {
+  $.i18n().load( `i18n/trans-${i18n.locale}.json`, i18n.locale ).done(function(x) {
     $('html').i18n();
   });
   $('.lang-switcher .lang').each(function() {
@@ -436,20 +436,26 @@ function downloadTraceplot(mcmcParam) {
           color: 'black',
           size: 16
         },
-        x: 0.5,
-        xanchor: 'center',
         y: 0.98,
         yanchor: 'top'
       },
       xaxis: {
         title: $.i18n('Iteration'),
-        range: [0, burninChain.length + mainChain.length + 500]
+        range: [0, burninChain.length + mainChain.length + 500],
+        gridcolor: 'darkgrey',
+        dtick: 1000
       },
       yaxis: {
-        title: 'μ'
+        title: mcmcParam.symbol,
+        showgrid: false
       },
       margin: {
         t: 0
+      },
+      showlegend: true,
+      legend: {
+        orientation: 'h',
+        borderwidth: 1
       }
     }
     
@@ -461,7 +467,7 @@ function downloadTraceplot(mcmcParam) {
       let now = new Date()
       let dateTimeFormat = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }) 
       let [{ value: month },,{ value: day },,{ value: year },,{ value: hour },,{ value: minute },,{ value: sec },,] = dateTimeFormat .formatToParts(now) 
-      let plotFilename = `traceplot_mcmc_${year}${month}${day}_${hour}${minute}${sec}`
+      let plotFilename = `${$.i18n('traceplot-filename')}_${mcmcParam.symbol.replace(/<[^>]+>(?=.)/g, '_').replace(/<[^>]+>$/, '')}_${year}${month}${day}_${hour}${minute}${sec}`
       Plotly.downloadImage(gd, {
         format: 'png',
         height: 600,
