@@ -1,4 +1,5 @@
 ﻿zygotine.BW = {};
+zygotine.X.common = zygotine.BW
 
 // à des fins de débogage
 zygotine.BW.memorize = false;
@@ -865,6 +866,7 @@ zygotine.BW.setDataEntries = function () {
         zygotine.BW.setDefaultsForDistribution(entries[key].currentValue);
     });
 
+    zygotine.X.setDataEntries()
     zygotine.BW.reset();
 };
 

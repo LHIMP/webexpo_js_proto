@@ -95,6 +95,7 @@
   "telechargez6": "Télécharger le graphique en tracé de courbe du paramètre MCMC (σ<sub>b</sub>)",
   "telechargez7": "Télécharger le graphique en tracé de courbe du paramètre MCMC (σ<sub>w</sub>)",
   "Posterior sample": "Échantillon postérieur",
-  "algo-seed-heading": "Paramètre d'amorçage des calculs (facultatif)",
+  "algo-seed-heading": "Paramètre d'amorçage des calculs",
+  "algo-seed-expl": "Facultatif. Un entier compris entre 1 et 2147483647. Valeur utilisée dans l'amorçage des calculs et qui amène précisément aux mêmes résultats numériques à chaque lancée.",
   "seed-val": "Valeur d'amorçage"
 }

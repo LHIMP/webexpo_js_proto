@@ -95,5 +95,6 @@
   "telechargez3": "Download the traceplot of the MCMC param μ",
   "telechargez4": "Download the traceplot of the MCMC param σ",
   "algo-seed-heading": "Computation seed (optional)",
+  "algo-seed-expl": "Optional. An integer between (inclusively) 1 and 2147483647. Value used as algorithm seed and thus leads to consistent results upon successive calls.",
   "seed-val": "Seed"
 }

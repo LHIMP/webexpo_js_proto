@@ -1,4 +1,5 @@
 zygotine.SEG = {};
+zygotine.X.common = zygotine.SEG
 
 
 zygotine.SEG.ready = function () {
@@ -412,6 +413,8 @@ zygotine.SEG.setDataEntries = function () {
     entries.pdN = new valueBased("pdN", '', "Nombre entier (>1) requis lorsque la prior pour sigma est 'expostats' et que des données externes sont prises en compte.", integer, 2, Number.MAX_SAFE_INTEGER);
     //radio
 
+    zygotine.X.setDataEntries()
+    
     var radioBased = zygotine.X.RadioButtonBasedDataEntry;
     entries.sigmaPrior = new radioBased('sigmaPrior', 'spExpostats');
     entry = entries.sigmaPrior;

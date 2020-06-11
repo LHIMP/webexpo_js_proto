@@ -5,6 +5,12 @@
 
 zygotine.X = {};
 zygotine.X.lastModel = null;
+zygotine.X.common = null
+
+zygotine.X.setDataEntries = function() {
+  let entries = zygotine.X.common.dataEntries
+  entries.prngSeed = new zygotine.X.ValueBasedDataEntry("prngSeed", '', zygotine.X.i18n('algo-seed-expl', 'prngSeed'), true, 1, Math.pow(2,31)-1);
+}
 
 zygotine.X.getNumericalResult = function (
     logN,
@@ -376,6 +382,17 @@ zygotine.X.alert = function (message, title) {
     });
 }
 
+zygotine.X.i18n = function(msgid, elemid) {
+  (waitForTranslation = function() {
+    if ( !$('body').data('trans-done') ) {
+      console.log("WAITING FOR TRANSLATION...")
+      setTimeout(waitForTranslation, 500)
+    } else {
+      $(`#${elemid}`).attr('title', $.i18n(msgid))
+    }
+  })()
+}
+
 function initLocale()
 {
   $.i18n.debug = true;
@@ -390,8 +407,11 @@ function translatePage()
 {
   var i18n = $.i18n({locale: $.i18n.locale});
   $('body').attr('data-lang', $.i18n.locale);
+  $('body').data('trans-done', 0)
   $.i18n().load( `i18n/trans-${i18n.locale}.json`, i18n.locale ).done(function(x) {
     $('html').i18n();
+      console.log("TRANSLATION DONE")
+      $('body').data('trans-done', 1)
   });
   $('.lang-switcher .lang').each(function() {
     var this_locale = $(this)[0].classList[1];
