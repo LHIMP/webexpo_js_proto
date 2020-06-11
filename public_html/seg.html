@@ -118,10 +118,10 @@
                 <!-- les étiquettes des colonnes pour commencer. Il n'y a que deux colonnes. -->
                 <div class="tableHeader DEcol1" data-i18n="params-interp"></div>
                 <section class="table">
-                    <div class="tableRow">
-                        <div class="tableHeader DEcol2_3" data-i18n="def-priors">
-                        </div>
-                    </div>
+                  <div class="tableRow">
+                    <div class="tableHeader DEcol2" data-i18n="def-priors"></div>
+                    <div class="tableHeader DEcol3" data-i18n="algo-seed-heading"></div>
+                  </div>
                 </section>
             </div>
             <!-- le contenu de la deuxième rangée -->
@@ -136,37 +136,45 @@
                 </div>
                 <section class="table">
                     <div class="tableRow">
-                        <div class="tableCell DEcol2_3" style="height: 7em;border-bottom:none;">
-                            <div id="muPriorContainer" style="border:1px solid lightgrey;  padding:3px;  margin: 0 200px 0 220px;">
-                                <div style="text-align:center; font-size:1.1em; " data-i18n="prior-mu"></div>
-                                <div class="minmax" style="text-align:center;"><span class="rightJustLbl" style="width:3em;"> min&nbsp;:</span><input type="text" id="muLower" /></div>
-                                <div class="minmax" style="text-align:center;"><span class="rightJustLbl" style="width:3em;"> max&nbsp;:</span><input type="text" id="muUpper" /></div>
-                            </div>
-                            <div id="sigmaPriorContainer" class="rdGroup" style="margin:0 10em; margin-top:5px">
-                                <div data-i18n="prior-sigma"></div>
-                                <div style="display:block; vertical-align:middle; text-align:left;">
-                                    <input id="spExpostats" type="radio" name="sigmaPrior" value="expostats" /><label for="spExpostats">Expostats</label>
-                                </div>
-                                <div class="numInt"><span class="rightJustLbl2 append-colon">logSigmaMu</span><input id="logSigmaMu" type="text" class="expostatsDep"></div>
-                                <div class="numInt"><span class="rightJustLbl2 append-colon">logSigmaPrec</span><input id="logSigmaPrec" type="text" class="expostatsDep"></div>
-                                <div id="pastDataContainer" style="margin-left:6.5em; margin-top:.5em;">
-                                    <input id="withPastData" type="checkbox" class="expostatsDep" /><label for="withPastData" data-i18n="avec-don"></label>
-                                    <div class="numInt"><span class="rightJustLbl append-colon" data-i18n="moyenne"></span><input type="text" id="pdMean" class="pastDataDep"></div>
-                                    <div class="numInt"><span class="rightJustLbl append-colon" data-i18n="ecart-type"></span><input type="text" id="pdSd" class="pastDataDep"></div>
-                                    <div class="numInt"><span class="rightJustLbl append-colon" data-i18n="taille"></span><input type="text" id="pdN" class="pastDataDep">(n)</div>
-                                </div>
-                                <div style="display:block; vertical-align:middle; text-align:left;">
-                                    <input type="radio" id="spUniform" name="sigmaPrior" value="uniform" /><label for="spUniform" data-i18n="unif"></label>
-                                    <div class="numInt">
-                                        <label class="rightJustLbl2 append-colon" data-i18n="borne-inf"></label><input id="sdRangeInf" type="text" class="uniformDep">
-                                    </div>
-                                    <div class="numInt">
-                                        <label class="rightJustLbl2 append-colon" data-i18n="borne-sup"></label><input id="sdRangeSup" type="text" class="uniformDep">
-                                    </div>
-                                </div>
-                            </div>
+                      <div class="tableCell DEcol2" style="height: 7em;">
+                          <div id="muPriorContainer" style="border:1px solid lightgrey;  padding:3px;  margin: 0;">
+                              <div style="text-align:center; font-size:1.1em; " data-i18n="prior-mu"></div>
+                              <div class="minmax" style="text-align:center;"><span class="rightJustLbl" style="width:3em;"> min&nbsp;:</span><input type="text" id="muLower" /></div>
+                              <div class="minmax" style="text-align:center;"><span class="rightJustLbl" style="width:3em;"> max&nbsp;:</span><input type="text" id="muUpper" /></div>
+                          </div>
+                          <div id="sigmaPriorContainer" class="rdGroup" style="margin:0; margin-top:5px">
+                              <div data-i18n="prior-sigma"></div>
+                              <div style="display:block; vertical-align:middle; text-align:left;">
+                                  <input id="spExpostats" type="radio" name="sigmaPrior" value="expostats" /><label for="spExpostats">Expostats</label>
+                              </div>
+                              <div class="numInt"><span class="rightJustLbl2 append-colon">logSigmaMu</span><input id="logSigmaMu" type="text" class="expostatsDep"></div>
+                              <div class="numInt"><span class="rightJustLbl2 append-colon">logSigmaPrec</span><input id="logSigmaPrec" type="text" class="expostatsDep"></div>
+                              <div id="pastDataContainer" style="margin-left:6.5em; margin-top:.5em;">
+                                  <input id="withPastData" type="checkbox" class="expostatsDep" /><label for="withPastData" data-i18n="avec-don"></label>
+                                  <div class="numInt"><span class="rightJustLbl append-colon" data-i18n="moyenne"></span><input type="text" id="pdMean" class="pastDataDep"></div>
+                                  <div class="numInt"><span class="rightJustLbl append-colon" data-i18n="ecart-type"></span><input type="text" id="pdSd" class="pastDataDep"></div>
+                                  <div class="numInt"><span class="rightJustLbl append-colon" data-i18n="taille"></span><input type="text" id="pdN" class="pastDataDep">(n)</div>
+                              </div>
+                              <div style="display:block; vertical-align:middle; text-align:left;">
+                                  <input type="radio" id="spUniform" name="sigmaPrior" value="uniform" /><label for="spUniform" data-i18n="unif"></label>
+                                  <div class="numInt">
+                                      <label class="rightJustLbl2 append-colon" data-i18n="borne-inf"></label><input id="sdRangeInf" type="text" class="uniformDep">
+                                  </div>
+                                  <div class="numInt">
+                                      <label class="rightJustLbl2 append-colon" data-i18n="borne-sup"></label><input id="sdRangeSup" type="text" class="uniformDep">
+                                  </div>
+                              </div>
+                          </div>
 
+                      </div>
+                      <div class="tableCell DEcol3">
+                        <div id="seedContainer">
+                          <div class="longLabel">
+                            <span class="rightJustLbl2 append-colon" data-i18n="seed-val"></span>
+                            <input type="text" id="prngSeed">
+                          </div>
                         </div>
+                      </div>
                     </div>
                 </section>
                 <!--/section-->

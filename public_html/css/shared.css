@@ -92,6 +92,10 @@ input[type=text].invalid, textarea.invalid {
     width: 333px;
 }
 
+.DEcol2X {
+    width: 400px;
+}
+
 .DEcol3 {
     width: 333px;
 }

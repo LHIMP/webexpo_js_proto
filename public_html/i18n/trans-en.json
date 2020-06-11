@@ -93,5 +93,7 @@
   "traceplot-title": "Traceplot of MCMC parameter",
   "traceplot-filename": "traceplot_mcmc_param",
   "telechargez3": "Download the traceplot of the MCMC param μ",
-  "telechargez4": "Download the traceplot of the MCMC param σ"
+  "telechargez4": "Download the traceplot of the MCMC param σ",
+  "algo-seed-heading": "Computation seed (optional)",
+  "seed-val": "Seed"
 }

@@ -94,5 +94,7 @@
   "telechargez5": "Télécharger le graphique en tracé de courbe du paramètre MCMC (μ<sub>y</sub>)",
   "telechargez6": "Télécharger le graphique en tracé de courbe du paramètre MCMC (σ<sub>b</sub>)",
   "telechargez7": "Télécharger le graphique en tracé de courbe du paramètre MCMC (σ<sub>w</sub>)",
-  "Posterior sample": "Échantillon postérieur"
+  "Posterior sample": "Échantillon postérieur",
+  "algo-seed-heading": "Paramètre d'amorçage des calculs (facultatif)",
+  "seed-val": "Valeur d'amorçage"
 }
