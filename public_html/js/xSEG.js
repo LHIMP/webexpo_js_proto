@@ -5,7 +5,7 @@ zygotine.X.common = zygotine.SEG
 zygotine.SEG.ready = function () {
     zygotine.SEG.hideNumericalResults();
     zygotine.SEG.setDataEntries();
-    zygotine.X.ready();
+    zygotine.X.ready()
 
     $("#resetBtn").click(function () {
         zygotine.SEG.reset();

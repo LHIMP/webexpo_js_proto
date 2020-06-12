@@ -8,6 +8,7 @@ zygotine.BW.history = [];
 zygotine.BW.ready = function () {
     zygotine.BW.hideNumericalResults();
     zygotine.BW.setDataEntries();
+    zygotine.X.ready()
 
     $("#resetBtn").click(function () {
         zygotine.BW.reset();
