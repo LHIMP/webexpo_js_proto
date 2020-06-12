@@ -190,17 +190,21 @@
             </div>
         </section>
         <section class="table">
-            <div class="tableRow">
-                <div class="tableCell DEcol1_2_3" style="height: 1em;border-bottom:none;">
-                    <button id="calcBtn" style="margin-right: 10px;" data-i18n="lancer"></button><button id="resetBtn" data-i18n="reinit"></button>
-                    <div id="demoBtns" class="trans">
-                        <button id="normExpostatsBtn" class="trans">normale / expostats</button>
-                        <button id="logNExpostatsBtn" class="trans">log-normale / expostats</button>
-                        <button id="normUniformBtn" class="trans">normale / uniforme</button>
-                        <button id="logNUniformBtn" class="trans">log-normale / uniforme</button>
-                    </div>
-                </div>
+          <div class="tableRow">
+            <div class="tableCell DEcol1_2_3" style="height: 1em; margin-top: 1em">
+              <button id="calcBtn" style="margin-right: 10px;" data-i18n="lancer"></button>
+              <button id="resetBtn" data-i18n="reinit"></button>
             </div>
+          </div>
+          <fieldset class="demo">
+            <legend data-i18n="demo-btns-legend"></legend>
+              <div id="demoBtns" class="trans">
+                  <button id="normExpostatsBtn" class="trans">normale / expostats</button>
+                  <button id="logNExpostatsBtn" class="trans">log-normale / expostats</button>
+                  <button id="normUniformBtn" class="trans">normale / uniforme</button>
+                  <button id="logNUniformBtn" class="trans">log-normale / uniforme</button>
+              </div>
+          </fieldset>
         </section>
 
         <section id="outputData" class="table DEcol1_2_3">

@@ -15,6 +15,19 @@ zygotine.X.setDefaultsForDistribution = function(loi) {
   zygotine.X.common.dataEntries.prngSeed.reset()
 }
 
+zygotine.X.ready = function() {
+  $('.toggle-show').click(function(e) {
+    $targ = $(this).find('svg[data-icon]')
+    $targ.toggleClass('fa-plus-square')
+    $targ.toggleClass('fa-minus-square')
+    $span = $(this).find('span')
+    let show = $span.attr('data-show')
+    show = 1-parseInt(show)
+    $span.attr('data-show', show)
+    $span.text($.i18n(`show-examples-${show}`))
+    $('#demoBtns').toggle()
+  })
+}
 zygotine.X.setDataEntries = function() {
   let entries = zygotine.X.common.dataEntries
   entries.prngSeed = new zygotine.X.ValueBasedDataEntry("prngSeed", zygotine.X.genPseudoRand32Bit(), zygotine.X.i18n('algo-seed-expl', 'prngSeed'), true, 1, Math.pow(2,31)-1);

@@ -13,10 +13,6 @@
     margin: auto;
 }
 
-#demoBtns {
-    margin: 10px 0px;
-}
-
 .divisor {
     margin-top: 10px;
 }
@@ -178,4 +174,9 @@ body[data-lang="fr"] span.append-colon:after, body[data-lang="fr"] label.append-
 
 body[data-lang="en"] span.append-colon:after, body[data-lang="en"] label.append-colon:after {
   content: ' : ';
+}
+
+fieldset.demo {
+  display: inline-block;
+  margin-top: 5px;
 }
