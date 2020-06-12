@@ -7,9 +7,17 @@ zygotine.X = {};
 zygotine.X.lastModel = null;
 zygotine.X.common = null
 
+zygotine.X.genPseudoRand32Bit = function() {
+  return (Math.random() * Math.pow(2, 31)) | 0
+}
+
+zygotine.X.setDefaultsForDistribution = function(loi) {
+  zygotine.X.common.dataEntries.prngSeed.reset()
+}
+
 zygotine.X.setDataEntries = function() {
   let entries = zygotine.X.common.dataEntries
-  entries.prngSeed = new zygotine.X.ValueBasedDataEntry("prngSeed", '', zygotine.X.i18n('algo-seed-expl', 'prngSeed'), true, 1, Math.pow(2,31)-1);
+  entries.prngSeed = new zygotine.X.ValueBasedDataEntry("prngSeed", zygotine.X.genPseudoRand32Bit(), zygotine.X.i18n('algo-seed-expl', 'prngSeed'), true, 1, Math.pow(2,31)-1);
 }
 
 zygotine.X.getNumericalResult = function (
@@ -385,7 +393,6 @@ zygotine.X.alert = function (message, title) {
 zygotine.X.i18n = function(msgid, elemid) {
   (waitForTranslation = function() {
     if ( !$('body').data('trans-done') ) {
-      console.log("WAITING FOR TRANSLATION...")
       setTimeout(waitForTranslation, 500)
     } else {
       $(`#${elemid}`).attr('title', $.i18n(msgid))
@@ -410,7 +417,6 @@ function translatePage()
   $('body').data('trans-done', 0)
   $.i18n().load( `i18n/trans-${i18n.locale}.json`, i18n.locale ).done(function(x) {
     $('html').i18n();
-      console.log("TRANSLATION DONE")
       $('body').data('trans-done', 1)
   });
   $('.lang-switcher .lang').each(function() {

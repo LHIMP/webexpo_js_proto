@@ -470,7 +470,7 @@ zygotine.SEG.setDataEntries = function () {
 
 zygotine.SEG.getDataEntryNames = (function () {
 
-    var common = ['obsValues', 'nIter', 'nBurnin', 'monitorBurnin', 'oel', 'confidenceLevelForCredibileInterval', 'fracThreshold', 'percOfInterest', 'initMu', 'initSigma', 'muLower', 'muUpper'];
+    var common = ['obsValues', 'nIter', 'nBurnin', 'monitorBurnin', 'oel', 'confidenceLevelForCredibileInterval', 'fracThreshold', 'percOfInterest', 'initMu', 'initSigma', 'muLower', 'muUpper', 'prngSeed'];
     var unifPrior = ['sdRangeInf', 'sdRangeSup'];
     var expostatsPrior = ['logSigmaMu', 'logSigmaPrec'];
     var pd = ['pdMean', 'pdSd', 'pdN'];
@@ -533,6 +533,7 @@ zygotine.SEG.setDefaultsForDistribution = function (loi) {
     entries.logSigmaPrec.element.val(defaults.logSigmaPrec[loi].inform).trigger('change');
     entries.sdRangeInf.element.val(defaults.sdRangeInf[loi].unInform).trigger('change');
     entries.sdRangeSup.element.val(defaults.sdRangeSup[loi].unInform).trigger('change');
+    zygotine.X.setDefaultsForDistribution(loi)
 };
 
 zygotine.SEG.tests = {
@@ -544,6 +545,7 @@ zygotine.SEG.tests = {
         $('#withPastData').prop('checked', false).trigger('change');
         $('#obsValues').val(a).trigger('change');
         $('#oel').val('.95').trigger('change');
+        $('#prngSeed').val('1111').trigger('change')
     },
 
     ecrireLogNExpostatsWithPDS: function () {
@@ -557,7 +559,7 @@ zygotine.SEG.tests = {
         $('#pdMean').val('-0.5108256').trigger('change');
         $('#pdSd').val('0.9162907').trigger('change');
         $('#pdN').val('20').trigger('change');
-
+        $('#prngSeed').val('2222').trigger('change')
     },
 
     ecrireNormExpostatsWoPDS: function () {
@@ -568,6 +570,7 @@ zygotine.SEG.tests = {
         $('#withPastData').prop('checked', false);
         $('#obsValues').val(a).trigger('change');
         $('#oel').val('90.0').trigger('change');
+        $('#prngSeed').val('3333').trigger('change')
     },
 
     ecrireNormExpostatsWithPDS: function () {
@@ -583,6 +586,7 @@ zygotine.SEG.tests = {
         $('#pdMean').val('90').trigger('change');
         $('#pdSd').val('5').trigger('change');
         $('#pdN').val('20').trigger('change');
+        $('#prngSeed').val('4444').trigger('change')
     },
 
     ecrireLogNUniform: function () {
@@ -593,6 +597,7 @@ zygotine.SEG.tests = {
         $('#withPastData').prop('checked', false);
         $('#obsValues').val(a).trigger('change');
         $('#oel').val('.95').trigger('change');
+        $('#prngSeed').val('5555').trigger('change')
     },
 
     ecrireNormUniform: function () {
@@ -603,5 +608,6 @@ zygotine.SEG.tests = {
         $('#spUniform').prop('checked', true).trigger('change');
         $('#obsValues').val(a).trigger('change');
         $('#oel').val('87.0').trigger('change');
+        $('#prngSeed').val('6666').trigger('change')
     }
 };

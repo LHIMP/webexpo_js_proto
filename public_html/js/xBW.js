@@ -937,6 +937,8 @@ zygotine.BW.setDefaultsForDistribution = function (loi) {
     entries.sigmaBetweenRangeSup.element.val(defaults.sigmaBetweenRangeSup[loi].uupOnSds).trigger('change');
     entries.sigmaWithinRangeInf.element.val(defaults.sigmaWithinRangeInf[loi].uupOnSds).trigger('change');
     entries.sigmaWithinRangeSup.element.val(defaults.sigmaWithinRangeSup[loi].uupOnSds).trigger('change');
+    
+    zygotine.X.setDefaultsForDistribution(loi)
 };
 
 zygotine.BW.tests = {
@@ -951,6 +953,7 @@ zygotine.BW.tests = {
         $('#oel').val('1.0').trigger('change');
         $('#nIter').val('5000').trigger('change');
         $('#nBurnin').val('0').trigger('change');
+        $('#prngSeed').val('7777').trigger('change')
     },
 
     ecrireNormExpostats: function () {
@@ -964,6 +967,7 @@ zygotine.BW.tests = {
         $('#nIter').val('5000').trigger('change');
         $('#nBurnin').val('0').trigger('change');
         $('#obsValues').val(a).trigger('change');
+        $('#prngSeed').val('8888').trigger('change')
     },
 
     ecrireLogNUniform: function () {
@@ -977,6 +981,7 @@ zygotine.BW.tests = {
         $('#oel').val('.5').trigger('change');
         $('#nIter').val('15000').trigger('change');
         $('#obsValues').val(a).trigger('change');
+        $('#prngSeed').val('9999').trigger('change')
     },
 
     ecrireNormUniform: function () {
@@ -988,6 +993,7 @@ zygotine.BW.tests = {
         $('#obsValues').val(a).trigger('change');
         $('#oel').val('90.0').trigger('change');
         $('#nIter').val('15000').trigger('change');
+        $('#prngSeed').val('1010').trigger('change')
     },
 
     // 
@@ -1005,6 +1011,3 @@ zygotine.BW.tests = {
         zygotine.X.prngSeed = 12;
     }
 };
-
-
-
