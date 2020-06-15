@@ -100,5 +100,5 @@
   "algo-seed-heading": "Computation seed (optional)",
   "algo-seed-expl": "Optional. An integer between (inclusively) 1 and 2147483647. Initiates the random number generation process as part of the Monte Carlo simulations. Reusing a seed value leads to a reproduction of the initial simulation and thus identical results at each iteration.",
   "seed-val": "Seed",
-  "demo-btns-legend": "Example settings"
+  "demo-btns-legend": "Use cases"
 }

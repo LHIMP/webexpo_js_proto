@@ -98,5 +98,5 @@
   "algo-seed-heading": "Paramètre d'amorçage des calculs",
   "algo-seed-expl": "Facultatif. Un entier compris entre 1 et 2147483647. Définit la génération des nombres aléatoires dans le processus de simulation Monte Carlo. Réutiliser la même valeur assure une reproductibilité des résultats itération par itération.",
   "seed-val": "Valeur d'amorçage",
-  "demo-btns-legend": "Paramétrages d'exemple"
+  "demo-btns-legend": "Cas d'utilisation"
 }
