@@ -100,12 +100,16 @@ input[type=text].invalid, textarea.invalid {
     width: 333px;
 }
 
+.DEcol3B {
+    width: 350px;
+}
+
 .DEcol2_3 {
-    width: 678px;
+    width: 695px;
 }
 
 .DEcol1_2_3 {
-    width: 970px;
+    width: 987px;
 }
 
 

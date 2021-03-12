@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <link rel="icon" type="image/png" href="favicon.png">
     <link href="js/jquery-ui.css" rel="stylesheet" />
     <link href="css/shared.css" rel="stylesheet" />
     <link href="css/seg.css" rel="stylesheet" />
-    <style>
-    </style>
     <title data-i18n="appname-title-seg"></title>
+    
     <script src="js/jquery-3.2.1.js"></script>
     <script src="js/jquery-ui.js"></script>
     <script src="js/jquery.caret-1.5.2.min.js"></script>
@@ -87,7 +87,7 @@
                 <section class="table">
                     <div class="tableRow">
                       <div class="tableHeader DEcol2" data-i18n="params-interp"></div>
-                      <div class="tableHeader DEcol3" data-i18n="params-mcmc"></div>
+                      <div class="tableHeader DEcol3B" data-i18n="params-mcmc"></div>
                     </div>
                 </section>
             </div>
@@ -105,7 +105,7 @@
                       <div class="longLabel"><span class="rightJustLbl2 append-colon" data-i18n="cent-crit"></span><input type="text" id="percOfInterest"><span>%</span></div>
                     </div>
                 </div>
-                        <div class="tableCell DEcol3">
+                        <div class="tableCell DEcol3B">
                             <div id="mcmcContainer">
                                 <!-- Les paramètres MCMC nIter, nBurnin, monitorBurni, mais également les valeurs initiales de de mu et sd -->
                                 <div class="numInt"><span class="rightJustLbl append-colon" data-i18n="iters"></span><input type="text" id="nIter">(n)</div>
@@ -125,7 +125,7 @@
             
             <div class="tableRow">
                 <!-- les étiquettes des colonnes pour commencer. Il n'y a que deux colonnes. -->
-                <div class="tableHeader DEcol1" data-i18n="est-dist"></div>
+                <div class="tableHeader DEcol1" data-i18n="selection-model"></div>
                 <section class="table">
                   <div class="tableRow">
                     <div class="tableHeader DEcol2_3">
@@ -145,8 +145,8 @@
                   <br>
                             <div id="mdlContainer" class="rdGroup">
                               <div style="text-align:left;" data-i18n="method"></div>
-                              <div><input type="radio" id="meth-classic" name="method" value="classic" onchange="zygotine.SEG.disableMethodDiv(event)" checked /><label for="meth-classic" data-i18n="classic"></label></div>
-                              <div><input type="radio" id="meth-riskband" name="method" value="riskband" onchange="zygotine.SEG.disableMethodDiv(event)" /><label for="meth-riskband" data-i18n="riskband"></label></div>
+                              <div><input type="radio" id="meth-classic" name="method" value="classic" /><label for="meth-classic" data-i18n="classic"></label></div>
+                              <div><input type="radio" id="meth-riskband" name="method" value="riskband" /><label for="meth-riskband" data-i18n="riskband"></label></div>
                             </div>
                             <div id="meContainer" class="rdGroup">
                                 <!-- Erreur de mesure, choix entre MESD et MECV, pour chacun obligation de donner un intervalle  -->
@@ -191,7 +191,7 @@
                           </div>
 
                       </div>
-                      <div class="tableCell DEcol3 method-candidate method-chosen" data-val="riskband" style="position: relative">
+                      <div class="tableCell DEcol3B method-candidate method-chosen" data-val="riskband" style="position: relative">
                         <div class="method-title" data-i18n="meth-riskband"></div>
                         <form name="riskband_form" style="margin-top: 20px">
                           <table border=0>
@@ -224,9 +224,9 @@
                                     <option value="8">8</option>
                                   </select>
                                 <br><br>
-                                <input type='radio' checked name='regionProbs' id='rp_equalwts' onChange="regionProbsChange(this)" value="equalwts"><label for="rp_equalwts"  data-i18n="eq-weight-reg"></label> <br>
-                                <input type='radio'         name='regionProbs' id='rp_unif' onChange="regionProbsChange(this)" value="unif"><label for="rp_unif" data-i18n="unif-priors"></label> <br>
-                                <input type='radio'         name='regionProbs' id='rp_user' onChange="regionProbsChange(this)" value="user"><label for="rp_user" data-i18n="user-priors"></label>
+                                <input type='radio' checked name='regionProbs' id='rp_equalwts' value="equalwts"><label for="rp_equalwts"  data-i18n="eq-weight-reg"></label> <br>
+                                <input type='radio'         name='regionProbs' id='rp_unif' value="unif"><label for="rp_unif" data-i18n="unif-priors"></label> <br>
+                                <input type='radio'         name='regionProbs' id='rp_user' value="user"><label for="rp_user" data-i18n="user-priors"></label>
                                 </td></tr></table>
                                 <p id="regions_table"></p>
                               </td>
