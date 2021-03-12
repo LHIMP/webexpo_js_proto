@@ -84,6 +84,10 @@ input[type=text].invalid, textarea.invalid {
     width: 280px;
 }
 
+.DEcol1B {
+    width: 280px;
+}
+
 .DEcol2 {
     width: 333px;
 }
@@ -103,6 +107,7 @@ input[type=text].invalid, textarea.invalid {
 .DEcol1_2_3 {
     width: 970px;
 }
+
 
 .rdGroup {
     border: 1px solid lightgrey;
@@ -179,4 +184,13 @@ body[data-lang="en"] span.append-colon:after, body[data-lang="en"] label.append-
 fieldset.demo {
   display: inline-block;
   margin-top: 5px;
+}
+
+#demoBtns > div {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+#demoBtns button {
+  cursor: pointer;
 }

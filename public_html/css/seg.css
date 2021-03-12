@@ -1,2 +1,52 @@
 body {
 }
+
+div.seed {
+  display: inline-block;
+}
+
+div.shield {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background-color: black;
+  opacity: .8;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  cursor: pointer;
+}
+
+#regions_table > table > tbody > tr > td:first-child {
+  width: 110px;
+}
+
+#regions_table > table > tbody > tr > td:first-child > input {
+  border: 1px solid;
+  width: 100%;
+}
+
+#riskband_tbl label, riskband_tbl input {
+  cursor: pointer;
+}
+
+div.method-candidate:not(.method-chosen) {
+  color: darkgrey;
+  background-color: lightgrey;
+}
+
+div.method-candidate:not(.method-chosen) table input, div.method-candidate:not(.method-chosen) input, div.method-candidate:not(.method-chosen) select {
+  border: 1px solid darkgrey !important;
+  background-color: lightgrey;
+  color: darkgrey;
+}
+
+input[name="method"], input[name="method"] + label[for] {
+  cursor: pointer;
+}
+
+div.method-title {
+  position: absolute;
+  top: 3px;
+  text-decoration: underline;
+}
