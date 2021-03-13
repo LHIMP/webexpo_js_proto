@@ -117,5 +117,10 @@
   "riskband" : "risk bands",
   "params-dist" : "Prior Distribution Parameters",
   "meth-classic" : "CLASSIC METHOD",
-  "meth-riskband" : "RISK BANDS METHOD"
+  "meth-riskband" : "RISK BANDS METHOD",
+  "priors-must-sum-to-1": "Prior probabilities must sum to 1",
+  "priors-must-be-non-neg" : "Prior probabilities must all be non-negative",
+  "bad-cut-offs": "The following cut-off values do not cross the (mu, sigma) domain: ",
+  "cut-offs-must-ascend" : "Cut-off values must be listed in ascending order",
+  "no-repeat-cut-offs" : "Cut-off values must not be duplicated"
 }
