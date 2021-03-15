@@ -61,7 +61,8 @@
   "repart-mes": "Distribution of observations",
   "exec-mod": "Model execution",
   "prod-res": "Result generation and display",
-  "telechargez": "Download the MCMC chains 'sample'",
+  "telechargez": "Download the MCMC chains (as CSV)",
+  "telechargez2": "Download the MCMC burnin chains (as CSV)",
   "non-cens": "non-censored",
   "intervalle": "interval",
   "surveiller": "monitor",
@@ -94,8 +95,8 @@
   "": "",
   "traceplot-title": "Traceplot of MCMC parameter",
   "traceplot-filename": "traceplot_mcmc_param",
-  "telechargez3": "Download traceplot of MCMC param (?)",
-  "telechargez4": "Download traceplot of MCMC param (?)",
+  "telechargez3": "Download traceplot of MCMC param (μ)",
+  "telechargez4": "Download traceplot of MCMC param (σ)",
   "telechargez5": "Download traceplot of MCMC param (?<sub>y</sub>)",
   "telechargez6": "Download traceplot of MCMC param (?<sub>b</sub>)",
   "telechargez7": "Download traceplot of MCMC param (?<sub>w</sub>)",
@@ -122,5 +123,6 @@
   "priors-must-be-non-neg" : "Prior probabilities must all be non-negative",
   "bad-cut-offs": "The following cut-off values do not cross the (mu, sigma) domain: ",
   "cut-offs-must-ascend" : "Cut-off values must be listed in ascending order",
-  "no-repeat-cut-offs" : "Cut-off values must not be duplicated"
+  "no-repeat-cut-offs" : "Cut-off values must not be duplicated",
+  "invalid-cut-offs": "Cut-off values must be numerical"
 }
