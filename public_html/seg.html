@@ -47,7 +47,6 @@
         
         $(document).ready(function () {
           translatePage();
-          DisplayRegionProbsTable()
             /*
             var obs = [28.9, 19.4, 5.5, 149.9, 26.42, 56.1];
             $("#obsValues").val(obs.join("\n"));
@@ -214,7 +213,7 @@
                                 <p id='riskband_error_msg'></p>
                                 <table id='riskband_tbl' border=0><tr><td style='vertical-align: top; padding-right: 20px;'>
                                       <span data-i18n="num-regions"></span>
-                                  <select id="R" onChange="change_R(this)">
+                                  <select id="R" name="numRegions" onChange="change_R(this)">
                                     <option value="2">2</option>
                                     <option value="3">3</option>
                                     <option value="4">4</option>
@@ -315,7 +314,14 @@
             <section id="dnldChains" class="table" style="margin: 15px 5px 0 0;">
                 <div class="tableRow">
                     <div class="tableCell" style=" width: 40em; padding: 5px 17px 5px 5px; height: 2em;">
-                        <button id="dnldSampleChainBtn" key="sampleChains" class="dnldBtn" data-i18n="telechargez"></button><button id="dnldBurninChainBtn" key="burninChains" class="dnldBtn"  data-i18n="telechargez2"></button>
+                        <button id="dnldSampleChainBtn" key="sampleChains" class="dnldBtn" data-i18n="telechargez"></button>
+                        <button id="dnldBurninChainBtn" key="burninChains" class="dnldBtn burnin-chain"  data-i18n="telechargez2"></button>
+                    </div>
+                </div>
+                <div class="tableRow">
+                    <div class="tableCell" style=" width: 40em; padding: 5px 17px 5px 5px; height: 2em;">
+                        <button id="dnldSampleChainAsRBtn" key="sampleChains" class="dnldBtn" data-i18n="telecharger-sample-r"></button>
+                        <button id="dnldBurninChainAsRBtn" key="burninChains" class="dnldBtn burnin-chain"  data-i18n="telecharger-burnin-r"></button>
                     </div>
                 </div>
               
@@ -323,6 +329,7 @@
                     <div class="tableCell" style=" width: 61em; padding: 5px 17px 5px 5px; height: 2em;">
                         <button id="dnldMuTraceplotBtn" key="muTraceplot" class="dnldBtn" data-i18n="telechargez3"></button>
                         <button id="dnldSigmaTraceplotBtn" key="sigmaTraceplot" class="dnldBtn" data-i18n="telechargez4"></button>
+                        <button id="dnldRiskbandDomainPlotBtn" class="dnldBtn riskband-plot" data-i18n="telecharger-riskband-domain-plot"></button>
                     </div>
                 </div>
             </section>

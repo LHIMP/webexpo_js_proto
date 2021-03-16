@@ -21,7 +21,7 @@ div.shield {
   width: 110px;
 }
 
-#regions_table > table > tbody > tr > td:first-child > input {
+#regions_table > table > tbody > tr > td:first-child > input:not(.invalid) {
   border: 1px solid;
   width: 100%;
 }

@@ -59,8 +59,10 @@
   "notez": "Prendre note ...",
   "exec-mod": "Exécution du modèle",
   "prod-res": "Production et affichage des résultats",
-  "telechargez": "Télécharger les chaines MCMC (en fichier CSV)",
+  "telechargez": "Télécharger les chaines «sample» MCMC (en fichier CSV)",
   "telechargez2": "Télécharger les chaines «burnin» MCMC (en fichier CSV)",
+  "telecharger-sample-r": "Télécharger les chaines «sample» MCMC (en fichier R)",
+  "telecharger-burnin-r": "Télécharger les chaines «burnin» MCMC (en fichier R)",
   "non-cens": "non-censuré",
   "repart-mes": "Répartition des observations",
   "seuil-correl": "Seuil de correlation intra-travailleur",
@@ -111,7 +113,7 @@
   "unif-priors" : "Distribution a priori uniforme (de mu, sigma)",
   "user-priors" : "Distributions a priori définies par utilisateur",
   "cut-offs" : "Bornes",
-  "cut-off-probs" : "Probabilitié a priori des régions",
+  "cut-off-probs" : "Probabilité a priori des régions",
   "classic" : "classique",
   "riskband" : "par bandes de risque",
   "params-dist" : "Paramètres de distribution a priori",
@@ -123,5 +125,6 @@
   "bad-cut-offs": "Les valeurs de borne suivantes ne croisent pas le domaine (mu, sigma) :",
   "invalid-cut-offs": "Les valeurs de borne doivent étre numériques",
   "cut-offs-must-ascend" : "Les valueurs de borne doivent étre énumérées en ordre croissant",
-  "no-repeat-cut-offs" : "Les valeurs de borne ne peuvent pas contenir de doublon"
+  "no-repeat-cut-offs" : "Les valeurs de borne ne peuvent pas contenir de doublon",
+  "telecharger-riskband-domain-plot" : "Télécharger le graphique en nuage de points des chaînes MCMC avec bandes de risque"
 }

@@ -61,8 +61,10 @@
   "repart-mes": "Distribution of observations",
   "exec-mod": "Model execution",
   "prod-res": "Result generation and display",
-  "telechargez": "Download the MCMC chains (as CSV)",
-  "telechargez2": "Download the MCMC burnin chains (as CSV)",
+  "telechargez": "Download the MCMC chains (as CSV file)",
+  "telechargez2": "Download the MCMC burnin chains (as CSV file)",
+  "telecharger-sample-r": "Download the MCMC sample chains (as R file)",
+  "telecharger-burnin-r": "Download the MCMC burnin chains (as R file)",
   "non-cens": "non-censored",
   "intervalle": "interval",
   "surveiller": "monitor",
@@ -124,5 +126,6 @@
   "bad-cut-offs": "The following cut-off values do not cross the (mu, sigma) domain: ",
   "cut-offs-must-ascend" : "Cut-off values must be listed in ascending order",
   "no-repeat-cut-offs" : "Cut-off values must not be duplicated",
-  "invalid-cut-offs": "Cut-off values must be numerical"
+  "invalid-cut-offs": "Cut-off values must be numerical",
+  "telecharger-riskband-domain-plot" : "Download the MCMC scatterplot with risk bands"
 }
