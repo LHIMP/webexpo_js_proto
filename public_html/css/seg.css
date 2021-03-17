@@ -50,3 +50,17 @@ div.method-title {
   top: 3px;
   text-decoration: underline;
 }
+
+div#loading {
+  display: none;
+  background-image: url('../img/loading.gif');
+  height: 254px;
+  width: 254px;
+}
+
+div.center-div {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%)
+}

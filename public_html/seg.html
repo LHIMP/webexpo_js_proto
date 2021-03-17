@@ -41,6 +41,7 @@
     
     <script src="src/node_modules/plotly.js-dist/plotly.js"></script>
     <script src="src/node_modules/@fortawesome/fontawesome-free/js/all.js"></script>
+    <script src="src/node_modules/jstat/dist/jstat.min.js"></script>
     
     <script type="text/javascript">
         initLocale();
@@ -213,7 +214,7 @@
                                 <p id='riskband_error_msg'></p>
                                 <table id='riskband_tbl' border=0><tr><td style='vertical-align: top; padding-right: 20px;'>
                                       <span data-i18n="num-regions"></span>
-                                  <select id="R" name="numRegions" onChange="change_R(this)">
+                                  <select id="numregions" name="numRegions" onChange="change_R(this)">
                                     <option value="2">2</option>
                                     <option value="3">3</option>
                                     <option value="4">4</option>
@@ -267,7 +268,7 @@
 
         <section id="outputData" class="table">
             <div id="bePatient" data-i18n="calc-en-cours"></div>
-            <p id="RCodeWithResults"></p>
+            <p id="RCodeWithResults" style="display: none"></p>
             <div id="numRes">
                 <div data-i18n="resultats"></div>
                 <div id="gMean_NumRes" class="logN">
@@ -340,6 +341,6 @@
         <p>
         </p>
     </div>
-
+    <div id="loading" class="center-div"></div>
 </body>
 </html>

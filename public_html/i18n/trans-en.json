@@ -127,5 +127,6 @@
   "cut-offs-must-ascend" : "Cut-off values must be listed in ascending order",
   "no-repeat-cut-offs" : "Cut-off values must not be duplicated",
   "invalid-cut-offs": "Cut-off values must be numerical",
-  "telecharger-riskband-domain-plot" : "Download the MCMC scatterplot with risk bands"
+  "telecharger-riskband-domain-plot" : "Download the MCMC scatterplot with risk bands",
+  "mcmc-riskband-plot" : "MCMC Chains with Risk Bands"
 }

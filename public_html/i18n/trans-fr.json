@@ -126,5 +126,6 @@
   "invalid-cut-offs": "Les valeurs de borne doivent étre numériques",
   "cut-offs-must-ascend" : "Les valueurs de borne doivent étre énumérées en ordre croissant",
   "no-repeat-cut-offs" : "Les valeurs de borne ne peuvent pas contenir de doublon",
-  "telecharger-riskband-domain-plot" : "Télécharger le graphique en nuage de points des chaînes MCMC avec bandes de risque"
+  "telecharger-riskband-domain-plot" : "Télécharger le graphique en nuage de points des chaînes MCMC avec bandes de risque",
+  "mcmc-riskband-plot" : "Chaînes MCMC avec bandes de risque"
 }
