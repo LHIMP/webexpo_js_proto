@@ -13,7 +13,7 @@
     <script src="js/common.js"></script>
     <script src="js/webexpo/dataPreparation/A.js"></script>
     <script src="js/webexpo/dataPreparation/G.js"></script>
-    <script src="js/webexpo/dataPreparation/NUM.js"></script>
+    <script src="js/webexpo/randomSampleGeneration/NUM.js"></script>
     <script src="js/webexpo/dataPreparation/U.js"></script>
     <script src="js/webexpo/dataPreparation/M0.js"></script>
     <script src="js/webexpo/models/M2modelIntro.js"></script>
@@ -39,7 +39,7 @@
     <script src="src/jquery.i18n.js"></script>
     <script src="src/jquery.i18n.messagestore.js"></script>
     
-    <script src="src/node_modules/plotly.js-dist/plotly.js"></script>
+    <!--<script src="src/node_modules/plotly.js-dist/plotly.js"></script>-->
     <script src="src/node_modules/@fortawesome/fontawesome-free/js/all.js"></script>
     <script src="src/node_modules/jstat/dist/jstat.min.js"></script>
     
@@ -252,15 +252,15 @@
             <legend data-i18n="demo-btns-legend"></legend>
             <div id="demoBtns" class="trans">
               <div>
-                <button id="normExpostatsWoPDSBtn" class="trans" data-i18n="norm-expo"></button>
-                <button id="normExpostatsWithPDSBtn" class="trans" data-i18n="norm-expo-pds"></button>
-                <button id="logNExpostatsWoPDSBtn" class="trans" data-i18n="log-norm-expo"></button>
-                <button id="logNExpostatsWithPDSBtn" class="trans" data-i18n="log-norm-expo-pds"></button>
-                <button id="normUniformBtn" class="trans" data-i18n="norm-unif"></button>
-                <button id="logNUniformBtn" class="trans" data-i18n="log-norm-unif"></button>
+                <button id="normExpostatsWoPDSBtn" class="demo-btn method-classic trans" data-i18n="norm-expo"></button>
+                <button id="normExpostatsWithPDSBtn" class="demo-btn method-classic trans" data-i18n="norm-expo-pds"></button>
+                <button id="logNExpostatsWoPDSBtn" class="demo-btn method-classic trans" data-i18n="log-norm-expo"></button>
+                <button id="logNExpostatsWithPDSBtn" class="demo-btn method-classic trans" data-i18n="log-norm-expo-pds"></button>
+                <button id="normUniformBtn" class="demo-btn method-classic trans" data-i18n="norm-unif"></button>
+                <button id="logNUniformBtn" class="demo-btn method-classic trans" data-i18n="log-norm-unif"></button>
               </div>
               <div>
-                <button id="logNRiskband" class="trans" data-i18n="log-riskb"></button>
+                <button id="logNRiskband" class="demo-btn method-riskband trans" data-i18n="log-riskb"></button>
               </div>
             </div>
           </fieldset>
