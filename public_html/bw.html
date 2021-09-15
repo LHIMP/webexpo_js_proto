@@ -22,8 +22,8 @@
     <script src="js/webexpo/randomSampleGeneration/MT.js"></script>
     <script src="js/webexpo/randomSampleGeneration/O.js"></script>
     <script src="js/webexpo/randomSampleGeneration/S.js"></script>
-    <script src="js/x.js"></script>
-    <script src="js/xBW.js"></script>
+    <script src="js/webexpo/x.js"></script>
+    <script src="js/webexpo/xBW.js"></script>
     
     <!-- JS Files added by PB -->
     <script src="js/webexpo/extra/MAPInits-BW.js"></script>
@@ -56,6 +56,84 @@
             $('#logNUniformBtn').click(function () { zygotine.BW.tests.ecrireLogNUniform() });
             $('button.demo').show();
         });
+        
+        zygotine.BW.ready = function () {
+          zygotine.BW.hideNumericalResults();
+          zygotine.BW.setDataEntries();
+          zygotine.X.ready()
+
+          $("#resetBtn").click(function () {
+              zygotine.BW.reset();
+          });
+
+          $("#calcBtn").click(function () {
+              console.log(performance.now(), 'calc');
+              zygotine.BW.hideNumericalResults();
+              zygotine.X.showBePatient();
+              window.setTimeout( zygotine.BW.runModel,20);
+          });
+
+          //$('#select_Chains').change(function () { zygotine.BW.lastModel.showChain($('#select_Chains').val()); });
+          //resultat.workers.ids === ["w1", "w2", "w3", "w4", "w5"]
+          //$('#select_workerChains').change(function () { zygotine.BW.lastModel.showWorkerChain($('#select_workerChains').val()); });
+
+          (function () {
+              //merci à 'Useless Code'
+              //https://stackoverflow.com/questions/21012580/is-it-possible-to-write-data-to-file-using-only-javascript
+              var textFile = null,
+                  makeTextFile = function (text) {
+                      var data = new Blob([text], { type: 'text/plain' });
+                      // If we are replacing a previously generated file we need to
+                      // manually revoke the object URL to avoid memory leaks.
+                      if (textFile !== null) {
+                          window.URL.revokeObjectURL(textFile);
+                      }
+
+                      textFile = window.URL.createObjectURL(data);
+                      return textFile;
+                  };
+
+              var
+                  dnldSampleChains = document.getElementById("dnldSampleChainBtn"),
+                  dnldBurninChains = document.getElementById("dnldBurninChainBtn"),
+                  dnldMuOverallTraceplot = document.getElementById("dnldMuOverallTraceplotBtn"),
+                  dnldSigmaBetweenTraceplot = document.getElementById("dnldSigmaBetweenTraceplotBtn"),
+                  dnldSigmaWithinTraceplot = document.getElementById("dnldSigmaWithinTraceplotBtn")
+
+              dnldSampleChains.addEventListener('click', function () {
+                  var link = document.createElement('a');
+                  link.setAttribute('download', zygotine.BW.lastModel.result.prngSeed + '_sampleChains.txt');
+                  link.href = makeTextFile(zygotine.X.concatChains(zygotine.BW.lastModel.result, 'sample'));
+                  document.body.appendChild(link);
+
+                  // wait for the link to be added to the document
+                  window.requestAnimationFrame(function () {
+                      var event = new MouseEvent('click');
+                      link.dispatchEvent(event);
+                      document.body.removeChild(link);
+                  });
+              }, false);
+
+
+              dnldBurninChains.addEventListener('click', function () {
+                  var link = document.createElement('a');
+                  link.setAttribute('download', zygotine.BW.lastModel.result.prngSeed + '_burninChains.txt');
+                  link.href = makeTextFile(zygotine.X.concatChains(zygotine.BW.lastModel.result, 'burnin'));
+                  document.body.appendChild(link);
+
+                  // wait for the link to be added to the document
+                  window.requestAnimationFrame(function () {
+                      var event = new MouseEvent('click');
+                      link.dispatchEvent(event);
+                      document.body.removeChild(link);
+                  });
+              }, false);
+
+              dnldMuOverallTraceplot.addEventListener('click', function() { downloadTraceplot({name: 'muOverall', symbol: 'μ<sub>y</sub>'}) }, false)
+              dnldSigmaBetweenTraceplot.addEventListener('click', function() { downloadTraceplot({name: 'sigmaBetween', symbol: 'σ<sub>b</sub>'}) }, false)
+              dnldSigmaWithinTraceplot.addEventListener('click', function() { downloadTraceplot({name: 'sigmaWithin', symbol: 'σ<sub>w</sub>'}) }, false)
+          })();
+        };
     </script>
     <meta charset="utf-8" />
 </head>
