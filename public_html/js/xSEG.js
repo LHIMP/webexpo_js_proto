@@ -525,9 +525,9 @@ zygotine.SEG.setDataEntries = function () {
     //mcmc
     entries.nIter = new valueBased('nIter', defaults.nIter.logN.inform, "Requis. Un nombre entier compris entre 500 et  500000", integer, 500, 500000);
     entries.nBurnin = new valueBased('nBurnin', defaults.nBurnin.logN.inform, "Requis. Un nombre entier compris entre 0 et  50000", integer, 0, 15000);
-    entries.initMu = new valueBased("initMu", '', "Requis. Un nombre réel.", float);
+    entries.initMu = new valueBased("initMu", defaults.initMu.logN.inform, "Requis. Un nombre réel.", float);
 
-    entries.initSigma = new valueBased("initSigma", '', float);
+    entries.initSigma = new valueBased("initSigma", defaults.initSigma.logN.inform, float);
     //param�tres pour l'interpr�tation des données
     entries.oel = new valueBased("oel", '', "Requis. Un nombre réel correspondant à la valeur limite d'exposition.", float);
     entries.confidenceLevelForCredibileInterval = new valueBased("confidenceLevelForCredibileInterval", 90, "Requis. Un entier compris entre 1 et 99.", integer, 1, 99);

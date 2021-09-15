@@ -22,8 +22,8 @@
     <script src="js/webexpo/randomSampleGeneration/MT.js"></script>
     <script src="js/webexpo/randomSampleGeneration/O.js"></script>
     <script src="js/webexpo/randomSampleGeneration/S.js"></script>
-    <script src="js/x.js"></script>
-    <script src="js/xSEG.js"></script>
+    <script src="js/webexpo/x.js"></script>
+    <script src="js/webexpo/xSEG.js"></script>
     
     <!-- Fcts JavaScript de Patrick Belisle -->
     <script src="js/webexpo/extra/riskband.js"></script>
@@ -63,6 +63,74 @@
             $('#logNUniformBtn').click(function () { zygotine.SEG.tests.ecrireLogNUniform(); });
             $('#logNRiskband').click(function () { zygotine.SEG.tests.ecrireLogNRiskband(); });
         });
+        
+       zygotine.SEG.ready = function () {
+          zygotine.SEG.hideNumericalResults();
+          zygotine.SEG.setDataEntries();
+
+          $("#resetBtn").click(function () {
+              zygotine.SEG.reset();
+          });
+
+          $("#calcBtn").click(function () {
+              console.log(performance.now(), 'calc');
+              zygotine.SEG.hideNumericalResults();
+              zygotine.X.showBePatient();
+              window.setTimeout(zygotine.SEG.runModel, 20);
+          });
+
+          (function () {
+              //merci à 'Useless Code'
+              //https://stackoverflow.com/questions/21012580/is-it-possible-to-write-data-to-file-using-only-javascript
+              var textFile = null,
+                  makeTextFile = function (text) {
+                      var data = new Blob([text], { type: 'text/plain' });
+                      // If we are replacing a previously generated file we need to
+                      // manually revoke the object URL to avoid memory leaks.
+                      if (textFile !== null) {
+                          window.URL.revokeObjectURL(textFile);
+                      }
+
+                      textFile = window.URL.createObjectURL(data);
+                      return textFile;
+                  };
+
+              var
+                  dnldSampleChains = document.getElementById("dnldSampleChainBtn"),
+                  dnldBurninChains = document.getElementById("dnldBurninChainBtn");
+
+
+              dnldSampleChains.addEventListener('click', function () {
+                  var link = document.createElement('a');
+                  link.setAttribute('download', zygotine.SEG.lastModel.result.prngSeed + '_sampleChains.txt');
+                  link.href = makeTextFile(zygotine.X.concatChains(zygotine.SEG.lastModel.result, 'sample'));
+                  document.body.appendChild(link);
+
+                  // wait for the link to be added to the document
+                  window.requestAnimationFrame(function () {
+                      var event = new MouseEvent('click');
+                      link.dispatchEvent(event);
+                      document.body.removeChild(link);
+                  });
+              }, false);
+
+
+              dnldBurninChains.addEventListener('click', function () {
+                  var link = document.createElement('a');
+                  link.setAttribute('download', zygotine.SEG.lastModel.result.prngSeed + '_burninChains.txt');
+                  link.href = makeTextFile(zygotine.X.concatChains(zygotine.SEG.lastModel.result, 'burnin'));
+                  document.body.appendChild(link);
+
+                  // wait for the link to be added to the document
+                  window.requestAnimationFrame(function () {
+                      var event = new MouseEvent('click');
+                      link.dispatchEvent(event);
+                      document.body.removeChild(link);
+                  });
+              }, false);
+            })();
+          //$('#select_Chains').change(function () { zygotine.SEG.showChain($('#select_Chains').val()); });
+        }; 
     </script>
     <meta charset="utf-8" />
 </head>
