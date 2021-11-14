@@ -263,44 +263,53 @@
                       </div>
                       <div class="tableCell DEcol3B method-candidate method-chosen" data-val="riskband" style="position: relative">
                         <div class="method-title" data-i18n="meth-riskband"></div>
-                        <form name="riskband_form">
-<td style="vertical-align: top; padding-left: 100px;">
-<table border=0>
-  <tr><td>Parameters range</td>
-     <td style='text-align:center;'>Lower limit</td>
-     <td style='text-align:center;'>Upper Limit</td>
-  </tr>
-<tr><td>&mu;</td>
-  <td ><input style='text-align:center;' type='text' id='mu_lower' value='-3'></td>
-  <td ><input style='text-align:center;' type='text' id='mu_upper' value='6.2'></td>
-</tr>
-<tr><td>GSD --- exp(&sigma;)</td>
-  <td ><input style='text-align:center;' type='text' id='gsd_lower' value='1.05'></td>
-  <td ><input style='text-align:center;' type='text' id='gsd_upper' value='4'></td>
-</tr>
-</table>
-<br><br>
-<p id='error_msg'></p>
-<table border=0><tr><td style='vertical-align: top; padding-right: 20px;'>
-Number of regions
-  <select id="R" onChange="change_R()">
-    <option value="2">2</option>
-    <option value="3">3</option>
-    <option value="4">4</option>
-    <option value="5" selected>5</option>
-    <option value="6">6</option>
-    <option value="7">7</option>
-    <option value="8">8</option>
-  </select>
-  </td><td>
-<input type='radio' checked name='regionProbs' id='rp_equalwts' onChange="regionProbsChange(this)" value="equalwts"> Equally-weighted regions<br>
-<input type='radio'         name='regionProbs' id='rp_unif' onChange="regionProbsChange(this)" value="unif"> Uniform priors (on mu, sigma)<br>
-<input type='radio'         name='regionProbs' id='rp_user' onChange="regionProbsChange(this)" value="user"> User-defined prior probabilities
-</td></tr></table>
-<p id="regions_table"></p>
-<p id="RCodeWithResults"></p>
-</td></tr></table>
-</form>
+
+                        <form name="riskband_form" style="margin-top:20px">
+                          <td style="vertical-align: top; padding-left: 100px;">
+                            <table border=0>
+                              <tr>
+                                <td>Parameters range</td>
+                                <td style='text-align:center;'>Lower limit</td>
+                                <td style='text-align:center;'>Upper Limit</td>
+                              </tr>
+                              <tr>
+                                <td>&mu;</td>
+                                <td ><input style='text-align:center;' type='text' id='mu_lower' value='-3'></td>
+                                <td ><input style='text-align:center;' type='text' id='mu_upper' value='6.2'></td>
+                              </tr>
+                              <tr>
+                                <td>GSD --- exp(&sigma;)</td>
+                                <td ><input style='text-align:center;' type='text' id='gsd_lower' value='1.05'></td>
+                                <td ><input style='text-align:center;' type='text' id='gsd_upper' value='4'></td>
+                              </tr>
+                            </table>
+                            <br><br>
+                            <p id='error_msg'></p>
+                            <table border=0>
+                              <tr>
+                                <td style='vertical-align: top; padding-right: 20px;'>
+                                  Number of regions
+                                  <select id="R" onChange="change_R()">
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5" selected>5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                  </select>
+                                </td>
+                                <td>
+                                  <input type='radio' checked name='regionProbs' id='rp_equalwts' onChange="regionProbsChange(this)" value="equalwts"> Equally-weighted regions<br>
+                                  <input type='radio'         name='regionProbs' id='rp_unif' onChange="regionProbsChange(this)" value="unif"> Uniform priors (on mu, sigma)<br>
+                                  <input type='radio'         name='regionProbs' id='rp_user' onChange="regionProbsChange(this)" value="user"> User-defined prior probabilities
+                                </td>
+                              </tr>
+                            </table>
+                            <p id="regions_table"></p>
+                            <!--<p id="RCodeWithResults"></p>-->
+                          </td>
+                        </form>
                       </div>
                     </div>
                 </section>
