@@ -35,6 +35,7 @@
     <script src="js/webexpo/extra/normal-OneSubjectEstimates.js"></script>
     <script src="js/webexpo/extra/stats.js"></script>
     <script src="js/webexpo/extra/io.js"></script>
+    <script src="js/webexpo/extra/censored_data.js"></script>
     
     <script src="src/jquery.i18n.js"></script>
     <script src="src/jquery.i18n.messagestore.js"></script>
@@ -66,6 +67,7 @@
         
        zygotine.SEG.ready = function () {
           zygotine.SEG.hideNumericalResults();
+          DisplayRegionProbsTable()
           zygotine.SEG.setDataEntries();
 
           $("#resetBtn").click(function () {
@@ -261,46 +263,44 @@
                       </div>
                       <div class="tableCell DEcol3B method-candidate method-chosen" data-val="riskband" style="position: relative">
                         <div class="method-title" data-i18n="meth-riskband"></div>
-                        <form name="riskband_form" style="margin-top: 20px">
-                          <table border=0>
-                            <tr>
-                              <td style="vertical-align: top;">
-                                <table border=0>
-                                  <tr><td><i data-i18n="param"></i></td>
-                                    <td style='text-align:center;'><i data-i18n="lower-limit"></i></td>
-                                    <td style='text-align:center;'><i data-i18n="upper-limit"></i></td>
-                                  </tr>
-                                <tr><td>&mu;</td>
-                                  <td ><input style='text-align:center;' type='text' id='mu_lower' value='-3'></td>
-                                  <td ><input style='text-align:center;' type='text' id='mu_upper' value='6.2'></td>
-                                </tr>
-                                <tr><td>GSD --- exp(&sigma;)</td>
-                                  <td ><input style='text-align:center;' type='text' id='gsd_lower' value='1.05'></td>
-                                  <td ><input style='text-align:center;' type='text' id='gsd_upper' value='4'></td>
-                                </tr>
-                                </table>
-                                <p id='riskband_error_msg'></p>
-                                <table id='riskband_tbl' border=0><tr><td style='vertical-align: top; padding-right: 20px;'>
-                                      <span data-i18n="num-regions"></span>
-                                  <select id="numregions" name="numRegions" onChange="change_R(this)">
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <option value="5" selected>5</option>
-                                    <option value="6">6</option>
-                                    <option value="7">7</option>
-                                    <option value="8">8</option>
-                                  </select>
-                                <br><br>
-                                <input type='radio' name='regionProbs' id='rp_equalwts' value="equalwts"><label for="rp_equalwts"  data-i18n="eq-weight-reg"></label> <br>
-                                <input type='radio' name='regionProbs' id='rp_unif' value="unif"><label for="rp_unif" data-i18n="unif-priors"></label> <br>
-                                <input type='radio' name='regionProbs' id='rp_user' value="user"><label for="rp_user" data-i18n="user-priors"></label>
-                                </td></tr></table>
-                                <p id="regions_table"></p>
-                              </td>
-                            </tr>
-                          </table>
-                        </form>
+                        <form name="riskband_form">
+<td style="vertical-align: top; padding-left: 100px;">
+<table border=0>
+  <tr><td>Parameters range</td>
+     <td style='text-align:center;'>Lower limit</td>
+     <td style='text-align:center;'>Upper Limit</td>
+  </tr>
+<tr><td>&mu;</td>
+  <td ><input style='text-align:center;' type='text' id='mu_lower' value='-3'></td>
+  <td ><input style='text-align:center;' type='text' id='mu_upper' value='6.2'></td>
+</tr>
+<tr><td>GSD --- exp(&sigma;)</td>
+  <td ><input style='text-align:center;' type='text' id='gsd_lower' value='1.05'></td>
+  <td ><input style='text-align:center;' type='text' id='gsd_upper' value='4'></td>
+</tr>
+</table>
+<br><br>
+<p id='error_msg'></p>
+<table border=0><tr><td style='vertical-align: top; padding-right: 20px;'>
+Number of regions
+  <select id="R" onChange="change_R()">
+    <option value="2">2</option>
+    <option value="3">3</option>
+    <option value="4">4</option>
+    <option value="5" selected>5</option>
+    <option value="6">6</option>
+    <option value="7">7</option>
+    <option value="8">8</option>
+  </select>
+  </td><td>
+<input type='radio' checked name='regionProbs' id='rp_equalwts' onChange="regionProbsChange(this)" value="equalwts"> Equally-weighted regions<br>
+<input type='radio'         name='regionProbs' id='rp_unif' onChange="regionProbsChange(this)" value="unif"> Uniform priors (on mu, sigma)<br>
+<input type='radio'         name='regionProbs' id='rp_user' onChange="regionProbsChange(this)" value="user"> User-defined prior probabilities
+</td></tr></table>
+<p id="regions_table"></p>
+<p id="RCodeWithResults"></p>
+</td></tr></table>
+</form>
                       </div>
                     </div>
                 </section>
