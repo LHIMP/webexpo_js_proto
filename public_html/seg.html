@@ -300,9 +300,9 @@
                                   </select>
                                 </td>
                                 <td>
-                                  <input type='radio' checked name='regionProbs' id='rp_equalwts' onChange="regionProbsChange(this)" value="equalwts"><span data-i18n='eq-weight-reg'>Equally-weighted regions</span><br>
-                                  <input type='radio'         name='regionProbs' id='rp_unif' onChange="regionProbsChange(this)" value="unif"> <span data-i18n='unif-priors'>Uniform priors (on mu, sigma)</span><br>
-                                  <input type='radio'         name='regionProbs' id='rp_user' onChange="regionProbsChange(this)" value="user"> <span data-i18n='user-priors'>User-defined prior probabilities</span>
+                                  <input type='radio' checked name='regionProbs' id='rp_equalwts' onChange="regionProbsChange(this)" value="equalwts" style='cursor:pointer'><label for='rp_equalwts' data-i18n='eq-weight-reg' style='cursor:pointer'>Equally-weighted regions</label><br>
+                                  <input type='radio'         name='regionProbs' id='rp_unif' onChange="regionProbsChange(this)" value="unif" style='cursor:pointer'> <label data-i18n='unif-priors' for='rp_unif' style='cursor:pointer'>Uniform priors (on mu, sigma)</label><br>
+                                  <input type='radio'         name='regionProbs' id='rp_user' onChange="regionProbsChange(this)" value="user" style='cursor:pointer'> <label data-i18n='user-priors' for='rp_user' style='cursor:pointer'>User-defined prior probabilities</label>
                                 </td>
                               </tr>
                             </table>
