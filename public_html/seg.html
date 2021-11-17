@@ -268,9 +268,9 @@
                           <td style="vertical-align: top; padding-left: 100px;">
                             <table border=0>
                               <tr>
-                                <td>Parameters range</td>
-                                <td style='text-align:center;'>Lower limit</td>
-                                <td style='text-align:center;'>Upper Limit</td>
+                                <td data-i18n='param'>Parameters range</td>
+                                <td style='text-align:center;' data-i18n='lower-limit'>Lower limit</td>
+                                <td style='text-align:center;' data-i18n='upper-limit'>Upper Limit</td>
                               </tr>
                               <tr>
                                 <td>&mu;</td>
@@ -288,7 +288,7 @@
                             <table border=0>
                               <tr>
                                 <td style='vertical-align: top; padding-right: 20px;'>
-                                  Number of regions
+                                  <span data-i18n='num-regions'></span>
                                   <select id="R" onChange="change_R()">
                                     <option value="2">2</option>
                                     <option value="3">3</option>
@@ -300,9 +300,9 @@
                                   </select>
                                 </td>
                                 <td>
-                                  <input type='radio' checked name='regionProbs' id='rp_equalwts' onChange="regionProbsChange(this)" value="equalwts"> Equally-weighted regions<br>
-                                  <input type='radio'         name='regionProbs' id='rp_unif' onChange="regionProbsChange(this)" value="unif"> Uniform priors (on mu, sigma)<br>
-                                  <input type='radio'         name='regionProbs' id='rp_user' onChange="regionProbsChange(this)" value="user"> User-defined prior probabilities
+                                  <input type='radio' checked name='regionProbs' id='rp_equalwts' onChange="regionProbsChange(this)" value="equalwts"><span data-i18n='eq-weight-reg'>Equally-weighted regions</span><br>
+                                  <input type='radio'         name='regionProbs' id='rp_unif' onChange="regionProbsChange(this)" value="unif"> <span data-i18n='unif-priors'>Uniform priors (on mu, sigma)</span><br>
+                                  <input type='radio'         name='regionProbs' id='rp_user' onChange="regionProbsChange(this)" value="user"> <span data-i18n='user-priors'>User-defined prior probabilities</span>
                                 </td>
                               </tr>
                             </table>
